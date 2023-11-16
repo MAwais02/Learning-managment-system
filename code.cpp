@@ -246,6 +246,14 @@ public:
     {
         return capacity;
     }
+    string get_instructor()
+    {
+        return instructor;
+    }
+    int get_credits()
+    {
+        return credits;
+    }
     void display_course()
     {
         cout << " Code " << code << " Name " << name << " Credits " << credits << " instructor " << instructor << endl ;
@@ -272,7 +280,7 @@ protected:
     ifstream inFile;
     string fileName;
 public:
-    filehandling();
+    filehandling(){}  // default 
     filehandling(const string& fname)
     {
         fileName = fname;
@@ -282,20 +290,52 @@ public:
         outFile.open(fileName, ios::app);  // open file in append mode 
         if (outFile.is_open())
         {
-            outFile << obj.get_name() << "    ";
-            outFile << obj.get_roll_number() << "    ";
-            outFile << obj.get_age() << "    ";
-            outFile << obj.get_contact() << '\n'; // Add a newline character to separate entries
+            outFile << "Student name :" << obj.get_name() << "    ";
+            outFile << "Student Roll_NO :" << obj.get_roll_number() << "    ";
+            outFile << "Student Age :" << obj.get_age() << "    ";
+            outFile << "Student Contact :" << obj.get_contact() << '\n'; // Add a newline character to separate entries
         }
         else
         {
             cout << "File is not opening -- try Again !" << endl;
         }
     }
-    void write_courses(Course** allCourses);
-    void open(string);
-    void close();
-    void read(string);
+    void write_student_courses(student& obj)
+    {
+        outFile.open(fileName, ios::app);  // open file in append mode 
+        if (outFile.is_open())
+        {
+            outFile << "Student name : " << obj.get_name() << "    ";
+            outFile << "Student Roll NUmber :" << obj.get_roll_number() << "    ";
+            outFile << "Student Age :" << obj.get_age() << "    ";
+            outFile << "Student Contact :" << obj.get_contact() << '\n'; // Add a newline character to separate entries
+            outFile << "\n\n  COURSES  \n\n ";
+            for (int i = 0; i < 5; i++)
+            {
+                if (obj.get_course_student(i) != " ")
+                {
+                    outFile << obj.get_course_student(i) << endl ;
+                }
+            }
+        }
+        else
+        {
+            cout << "File is not opening -- try Again !" << endl;
+        }
+    }
+
+
+    void open(string file)
+    {
+       string filename = file;
+       ifstream cinn(filename);
+       string str;
+       while (getline(cinn, str))
+       {
+           cout << str << endl;
+       }
+       cout << endl;
+    }
 };
 class System : public student , public Course 
 {
@@ -336,6 +376,7 @@ public:
         courses[17] = Course(1223, "PF", "Amirwali", 3, 50);
         courses[18] = Course(1224, "PF", "Amirwali", 3, 50);
         courses[19] = Course(1225, "PF", "Amirwali", 3, 50);    // 0 - 19 = 20 
+
     }
     void displayMainMenu()
     {
@@ -417,7 +458,12 @@ public:
 
                 if (choice2 == 1)   // display already enrooll student 
                 {
+                    //display_student_system();  // display already enroll student 
                     display_student_system();
+                    filehandling open_file;
+                    cout << "-------------FOllowing are the existing students--------------\n";
+                    open_file.open("studentdata.txt");
+
                 }
                 else if (choice2 == 2)  // add student 
                 {
@@ -516,6 +562,7 @@ public:
                         cout << "No student with that roll number exist Sorry !";
                 }
             }
+
             // attendence 
             else if (choice == 3)
             {
@@ -671,9 +718,10 @@ public:
         }
     }
 
+
     void Register_courses()
     {
-        student::allocate_course_();
+       // student::allocate_course_();
         int c;  // code of course to register
         cout << "\nEnter code number of course to register\n";
         cin >> c;
@@ -687,7 +735,6 @@ public:
                 students[student_count_System++].add_course_student(courses[i].get_name());
                 courses[i].addStudent(students[i]);   // add student into course (us course mai student ko addkrdo)
                 
-
                 check_course_avalibility = true;
                 break;
             }
@@ -784,13 +831,15 @@ public:
     }
     void display_student_system() const 
     {
+        filehandling obj("student_All_Data.txt");   // store student data with courses 
         cout << ":: Students ::\n";
         for (int i = 0; i < 20; i++)
         {
 
             if (students[i].get_roll_number() != " ")
             {
-                students[i].display_student();
+                //students[i].display_student();
+                obj.write_student_courses(students[i]);   // save student data with courses 
                 cout << endl;
             }
         }
@@ -804,7 +853,7 @@ public:
     }
     //void performStudentSubMenuAction(int choice);
     //void performCourseSubMenuAction(int choice);
-    
+
     //// Save data to file
     //void saveDataToFile();
 
