@@ -2,6 +2,7 @@
 #include<string>
 #include<string.h>
 #include<fstream>
+#include<regex>
 using namespace std;
 
 const int max_courses = 5;
@@ -38,7 +39,7 @@ public:
     }
     void allocate_course_()
     {
-       // courses = new string[5];
+        // courses = new string[5];
     }
     //void register_student(string name, int roll_num, int age, string contact, string* course)
     //{
@@ -122,7 +123,7 @@ public:
                 cout << courses[i];
                 if (attendance[i] == 'P' || attendance[i] == 'A' || attendance[i] == 'L')
                 {
-                    cout << " Attendence : " << attendance[i] << endl ;
+                    cout << " Attendence : " << attendance[i] << endl;
                 }
                 if (marks[i] > 1 && marks[i] < 100)
                 {
@@ -256,7 +257,7 @@ public:
     }
     void display_course()
     {
-        cout << " Code " << code << " Name " << name << " Credits " << credits << " instructor " << instructor << endl ;
+        cout << " Code " << code << " Name " << name << " Credits " << credits << " instructor " << instructor << endl;
 
     }
     void displayStudents()
@@ -280,7 +281,7 @@ protected:
     ifstream inFile;
     string fileName;
 public:
-    filehandling(){}  // default 
+    filehandling() {}  // default 
     filehandling(const string& fname)
     {
         fileName = fname;
@@ -314,7 +315,7 @@ public:
             {
                 if (obj.get_course_student(i) != " ")
                 {
-                    outFile << obj.get_course_student(i) << endl ;
+                    outFile << obj.get_course_student(i) << endl;
                 }
             }
         }
@@ -327,17 +328,17 @@ public:
 
     void open(string file)
     {
-       string filename = file;
-       ifstream cinn(filename);
-       string str;
-       while (getline(cinn, str))
-       {
-           cout << str << endl;
-       }
-       cout << endl;
+        string filename = file;
+        ifstream cinn(filename);
+        string str;
+        while (getline(cinn, str))
+        {
+            cout << str << endl;
+        }
+        cout << endl;
     }
 };
-class System : public student , public Course 
+class System : public student, public Course
 {
 
 protected:
@@ -446,7 +447,7 @@ public:
             }
             cout << "You select option number :" << choice << endl;
             // this will check what user has chosse
-       
+
 
              // enroll a student menu 
             if (choice == 1)
@@ -467,12 +468,12 @@ public:
                 }
                 else if (choice2 == 2)  // add student 
                 {
-                  
+
                     string n, c, r;
                     int a;
                     cout << "Enter name of student : ";
                     cin.ignore();
-                    cin >> n ;
+                    cin >> n;
                     cout << "Enter contact number of student :";
                     cin.ignore();
                     cin >> c;
@@ -531,7 +532,7 @@ public:
                     }
                     if (check_avalibilty)
                     {
-                       // Register_courses();
+                        // Register_courses();
                         int c;  // code of course to register
                         cout << "\nEnter code number of course to register\n";
                         cin >> c;
@@ -578,7 +579,7 @@ public:
                     }
                 }
                 else if (choice2 == 2)
-                { 
+                {
                     string roll_num;
                     cout << "\nENter the roll number of student to mark attendence : ";
                     cin >> roll_num;
@@ -642,14 +643,14 @@ public:
                         if (roll == students[i].get_roll_number())
                         {
                             check_stU = true;
-                            index_ofSTu = i ;
+                            index_ofSTu = i;
                             cout << "\nStudent Found\n";
                             break;
                         }
                     }
                     if (check_stU)
                     {
-                        string sub_name; 
+                        string sub_name;
                         cout << "\nEnter subject name to Enter marks :";
                         cin >> sub_name;
                         for (int i = 0; i < 5; i++)
@@ -706,7 +707,7 @@ public:
                                 if (students[S_index].get_course_student(i) == name_Of_coUrse)
                                 {
                                     students[S_index].withdraw_courses(name_Of_coUrse);
- 
+
                                     cout << "\n----------Withdraw successfully---------------\n";
                                 }
                             }
@@ -721,20 +722,20 @@ public:
 
     void Register_courses()
     {
-       // student::allocate_course_();
+        // student::allocate_course_();
         int c;  // code of course to register
         cout << "\nEnter code number of course to register\n";
         cin >> c;
-        
+
         bool check_course_avalibility = false;
 
-        for (int i = 0; i < student_count_System ; i++)  // run only for students 
+        for (int i = 0; i < student_count_System; i++)  // run only for students 
         {
             if (courses[i].get_code() == c /*&& courses[i].get_capacity() < student_Course_count*/)  // allocate students in course
             {
                 students[student_count_System++].add_course_student(courses[i].get_name());
                 courses[i].addStudent(students[i]);   // add student into course (us course mai student ko addkrdo)
-                
+
                 check_course_avalibility = true;
                 break;
             }
@@ -791,27 +792,57 @@ public:
             }
         }
         else
-            cout << "Nos tudent exist with that roll number ";
+            cout << "No student exist with that roll number ";
     }
-    void remove_student(string roll)
+    // it will remove students from the file it has also method to remove during compile_time 
+    void remove_student(string roll)    
     {
-        student* temp = new student[20];
-        for (int i = 0; i < 19; i++)
-        {
-            if (students[i].get_roll_number() != roll)
-            {
-                temp[i] = students[i];
+        //student* temp = new student[20];
+        //for (int i = 0; i < 19; i++)
+        //{
+        //    if (students[i].get_roll_number() != roll)
+        //    {
+        //        temp[i] = students[i];
+        //    }
+        //}
+        //delete[] students;
+        //students = new student[20];         // again assign max student 
+        //student_count_System--;  // descrse studenet count 
+        //for (int i = 0; i < 20; i++)
+        //{
+        //    students[i] = temp[i];
+        //}
+        //cout << "\n-------Removed successfully----------\n";
+        //delete[] temp;
+
+        string tempFilename = "temp.txt"; // Temporary file
+        string filename = "studentdata.txt";
+        ifstream inputFile(filename);
+        ofstream tempFile(tempFilename);
+
+        regex patternRegex(roll);
+        string line;
+
+        while (getline(inputFile, line)) {
+            if (!regex_search(line, patternRegex)) {
+                tempFile << line << endl;
             }
         }
-        delete[] students;
-        students = new student[20];         // again assign max student 
-        student_count_System--;  // descrse studenet count 
-        for (int i = 0; i < 20; i++)
-        {
-            students[i] = temp[i];
+
+        inputFile.close();
+        tempFile.close();
+
+        if (remove(filename.c_str()) != 0) {    // deleting original file data 
+            cerr << "Error\n" << endl;
+            return;
         }
-        cout << "\n-------Removed successfully----------\n";
-        delete[] temp;
+
+        if (rename(tempFilename.c_str(), filename.c_str()) != 0) { // modifying data in the original file 
+            cerr << "Error\n" << endl;
+            return;
+        }
+
+        cout << "Lines matching the pattern removed successfully." << endl;
     }
     void add_student(student& obj)
     {
@@ -821,21 +852,20 @@ public:
         cin >> chh__;
         if (chh__ == 'Y' || chh__ == 'y')
         {
-           filehandling obj("Studentdata.txt");
-           obj.write_Student_data_into_File(students[student_count_System]);
+            filehandling obj("Studentdata.txt");
+            obj.write_Student_data_into_File(students[student_count_System]);
         }
         else
             cout << "\nStudent detail not saved \n";
 
         student_count_System++;
     }
-    void display_student_system() const 
+    void display_student_system() const
     {
         filehandling obj("student_All_Data.txt");   // store student data with courses 
         cout << ":: Students ::\n";
         for (int i = 0; i < 20; i++)
         {
-
             if (students[i].get_roll_number() != " ")
             {
                 //students[i].display_student();
@@ -851,23 +881,53 @@ public:
             courses[i].display_course();
         }
     }
-    //void performStudentSubMenuAction(int choice);
-    //void performCourseSubMenuAction(int choice);
-
-    //// Save data to file
-    //void saveDataToFile();
-
-    //// Load data from file
-    //void loadDataFromFile();
-
 };
 int System::student_count_System = 0;
 
+bool Authentication(string Student_ID)
+{
+    ifstream inputFile("studentdata.txt");
+
+    if (!inputFile.is_open()) {
+        cerr << "Error opening student data file." << endl;
+        return false;
+    }
+
+    regex patternRegex(".*\\bRoll_NO\\s*:\\s*" + Student_ID + "\\b.*");
+    string line;
+    bool check = false;
+
+    while (getline(inputFile, line)) {
+        if (regex_match(line, patternRegex)) {
+            check = true;
+            break;  // No need to continue searching if found
+        }
+    }
+    return check;
+}
 int main()
 {
-    System obj;
-    obj.displayMainMenu();
-    obj.performMainMenuAction();
+    char ch;
+    do
+    {
+        string ID; 
+        cout << "Enter your Roll NUmber for authentification : ";
+        cin >> ID;
+        bool checking_student =  Authentication(ID);   // check authentification of user 
+        if (checking_student)
+        {
+            cout << "----------------Welcome " << ID << " to FAST - NU LHR menu Page-------------- - \n";
+            System obj;
+            obj.displayMainMenu();
+            obj.performMainMenuAction();
+        }
+        else
+            cout << "Student not found in FAST-NU..Try Again Thank You !";
+        
+        cout << "press Y to End this program.....  ";
 
+    }
+    while (cin >> ch && (ch != 'Y' && ch != 'y' ));
+    cout << "-----THank u for using our service----------\n ";
     return 0;
 }
