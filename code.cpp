@@ -1,4 +1,5 @@
 #include<iostream>
+#include<sstream>
 #include<string>
 #include<string.h>
 #include<fstream>
@@ -110,11 +111,11 @@ public:
     }
     void display_student()
     {
-        cout << "Name :" << name << "  ";
-        cout << "ROll no :" << roll_num << "  ";
-        cout << "Age :" << age << "  ";
-        cout << "contacts :" << contact << "  ";
-        cout << "\nStudent has following courses :\n";
+        cout << name << "  ";
+        cout << roll_num << " ";
+        cout << age << " ";
+        cout << contact << " ";
+        cout << "Courses :\n";
 
         for (int i = 0; i < 5; i++)  // max 5 courses 
         {
@@ -132,6 +133,14 @@ public:
             }
         }
     }
+    void display_enroll_students()
+    {
+        cout << "Name is " << name << "  ";
+        cout << "Roll no is " << roll_num << " ";
+        cout << "Age  is " << age << " ";
+        cout << "COntact is " << contact << " ";
+        cout << endl;
+    }
     void set_name(string n)
     {
         name = n;
@@ -140,10 +149,18 @@ public:
     {
         contact = c;
     }
+    void set_rollnumber(string a)
+    {
+        roll_num = a;
+    }
     void set_age(int a)
     {
         age = a;
     }
+    //void set_course(string name_of_course)
+    //{
+    //    courses[course_index++] = name_of_course;
+    //}
     string get_roll_number()
     {
         return roll_num;
@@ -291,10 +308,28 @@ public:
         outFile.open(fileName, ios::app);  // open file in append mode 
         if (outFile.is_open())
         {
-            outFile << "Student name :" << obj.get_name() << "    ";
-            outFile << "Student Roll_NO :" << obj.get_roll_number() << "    ";
-            outFile << "Student Age :" << obj.get_age() << "    ";
-            outFile << "Student Contact :" << obj.get_contact() << '\n'; // Add a newline character to separate entries
+            outFile << obj.get_name() << " ";
+            outFile << obj.get_roll_number() << " ";
+            outFile << obj.get_age() << " ";
+            outFile << obj.get_contact();
+            outFile << '\n'; // Add a newline character to separate entries
+        }
+        else
+        {
+            cout << "File is not opening -- try Again !" << endl;
+        }
+    }
+    void write_courses(Course obj)
+    {
+        outFile.open(fileName, ios::app);  // open file in append mode 
+        if (outFile.is_open())
+        {
+            outFile << "Course Code :" << obj.get_code() << "    ";
+            outFile << "Name :" << obj.get_name() << "    ";
+            outFile << "Capacity :" << obj.get_capacity() << "    ";
+            outFile << "Instructor :" << obj.get_instructor() << "  ";
+            outFile << "Credits :" << obj.get_credits() << "\n";
+            outFile.close();
         }
         else
         {
@@ -340,45 +375,77 @@ public:
 };
 class System : public student, public Course
 {
-
 protected:
-    student* students;
-    Course courses[20];  // total availible courses 
+    student students[50];  // total student can be enrolled is 100 
+    Course courses[50];  // total vacancy for courses courses 
 
 public:
     static int student_count_System;
+    static int course_count_system;
     System()
     {
-        students = nullptr;
+        /*courses = nullptr;
+        students = nullptr;*/
     }
-    void allocatememory()
+    // this will add all courses in system 
+    void add_new_courses()
     {
-        students = new student[20];  // assume max students is 20 
-    }
-    void avalibl_courses()
-    {
-        courses[0] = Course(1234, "PF", "Amirwali", 3, 50);
-        courses[1] = Course(1235, "IICT", "Amirwali", 3, 50);
-        courses[2] = Course(1236, "OOP", "Amirwali", 3, 50);
-        courses[3] = Course(1237, "AP", "Amirwali", 3, 50);
-        courses[4] = Course(1238, "Islamiat", "Amirwali", 3, 50);
-        courses[5] = Course(1239, "Data", "Amirwali", 3, 50);
-        courses[6] = Course(1212, "Algo", "Amirwali", 3, 50);
-        courses[7] = Course(1213, "DS", "Amirwali", 3, 50);
-        courses[8] = Course(1214, "Linear Algebra", "Amirwali", 3, 50);
-        courses[9] = Course(1215, "Pks", "Amirwali", 3, 50);
-        courses[10] = Course(1216, "Hhh", "Amirwali", 3, 50);
-        courses[11] = Course(1217, "PF", "Amirwali", 3, 50);
-        courses[12] = Course(1218, "PF", "Amirwali", 3, 50);
-        courses[13] = Course(1219, "PF", "Amirwali", 3, 50);
-        courses[14] = Course(1220, "PF", "Amirwali", 3, 50);
-        courses[15] = Course(1221, "PF", "Amirwali", 3, 50);
-        courses[16] = Course(1222, "PF", "Amirwali", 3, 50);
-        courses[17] = Course(1223, "PF", "Amirwali", 3, 50);
-        courses[18] = Course(1224, "PF", "Amirwali", 3, 50);
-        courses[19] = Course(1225, "PF", "Amirwali", 3, 50);    // 0 - 19 = 20 
+        int c;  // code of course to register
+        string n;
+        int Crdeit;
+        string ins;
+        int capa;
+        cout << "\nEnter code number of course to register\n";
+        cin >> c;
+        cout << "Enter name of course : ";
+        cin >> n;
+        cout << "Enter credits of course : ";
+        cin >> Crdeit;
+        cout << "ENter instructor name : ";
+        cin >> ins;
+        cout << "Enter capacity of courses :";
+        cin >> capa;
+        courses[course_count_system] = Course(c, n, ins, Crdeit, capa);
+        char ch;
+        cout << "Are u sure to Save course :(y for yes N for no) ";
+        cin >> ch;
+        if (ch == 'Y' || ch == 'y')
+        {
 
+            filehandling obj("courses.txt");
+
+            obj.write_courses(courses[course_count_system]);
+            cout << " REgistred successfully \n";
+        }
+        else
+            cout << "----Course is not saved in database---";
+
+        course_count_system++;
     }
+    //void avalibl_courses()
+    //{
+    //    courses[0] = Course(1234, "PF", "Amirwali", 3, 50);
+    //    courses[1] = Course(1235, "IICT", "Amirwali", 3, 50);
+    //    courses[2] = Course(1236, "OOP", "Amirwali", 3, 50);
+    //    courses[3] = Course(1237, "AP", "Amirwali", 3, 50);
+    //    courses[4] = Course(1238, "Islamiat", "Amirwali", 3, 50);
+    //    courses[5] = Course(1239, "Data", "Amirwali", 3, 50);
+    //    courses[6] = Course(1212, "Algo", "Amirwali", 3, 50);
+    //    courses[7] = Course(1213, "DS", "Amirwali", 3, 50);
+    //    courses[8] = Course(1214, "Linear Algebra", "Amirwali", 3, 50);
+    //    courses[9] = Course(1215, "Pks", "Amirwali", 3, 50);
+    //    courses[10] = Course(1216, "Hhh", "Amirwali", 3, 50);
+    //    courses[11] = Course(1217, "PF", "Amirwali", 3, 50);
+    //    courses[12] = Course(1218, "PF", "Amirwali", 3, 50);
+    //    courses[13] = Course(1219, "PF", "Amirwali", 3, 50);
+    //    courses[14] = Course(1220, "PF", "Amirwali", 3, 50);
+    //    courses[15] = Course(1221, "PF", "Amirwali", 3, 50);
+    //    courses[16] = Course(1222, "PF", "Amirwali", 3, 50);
+    //    courses[17] = Course(1223, "PF", "Amirwali", 3, 50);
+    //    courses[18] = Course(1224, "PF", "Amirwali", 3, 50);
+    //    courses[19] = Course(1225, "PF", "Amirwali", 3, 50);    // 0 - 19 = 20 
+    //    course_count_system += 20;
+    //}
     void displayMainMenu()
     {
         cout << "1 - Enroll a student " << endl;
@@ -399,6 +466,7 @@ public:
     void displayCourseSubMenu()
     {
         cout << "1 - Available Courses" << endl;
+        cout << "2 - Add new courses " << endl;
         cout << "2 - Register course" << endl;
         cout << "3 - back" << endl;
     }
@@ -420,23 +488,8 @@ public:
         cout << "2 - Drop a course" << endl;
         cout << "3 - back" << endl;
     }
-    //// Get user input
-    //int getUserChoice()
-    //{
-    //    int choice;
-    //    cout << "Enter your choice :\n";
-    //    cin >> choice;
-    //    return choice;
-    //}
-    //// Validate user input
-    //bool isValidChoice(int choice, int maxChoice)
-    //{
-    //    return choice >= 1 && choice <= maxChoice;
-    //}
     void performMainMenuAction()
     {
-        // this will take user input from user 
-        allocatememory(); // allocate memoriy 
         int choice;
         while (cout << "Enter any chocie from above main\n" && cin >> choice && choice != 6)
         {
@@ -446,9 +499,7 @@ public:
                 cin >> choice;
             }
             cout << "You select option number :" << choice << endl;
-            // this will check what user has chosse
-
-
+            // this will check what user has choice
              // enroll a student menu 
             if (choice == 1)
             {
@@ -459,32 +510,71 @@ public:
 
                 if (choice2 == 1)   // display already enrooll student 
                 {
-                    //display_student_system();  // display already enroll student 
-                    display_student_system();
-                    filehandling open_file;
+                    //student_count_System = 0;
+                    //ifstream inputFile("studentdata.txt");
+                    //if (!inputFile.is_open())
+                    //{
+                    //    cout  << "Error opening file!" << std::endl;
+                    //    return;
+                    //}
+                    //// Assuming one line contains all the data
+                    //string line;
+                    //while (getline(inputFile, line)) 
+                    //{
+                    //    
+                    //    istringstream iss(line);
+                    //    string name, rollNumber, contact;
+                    //    int age_;
+                    //    // Assuming the data in the file is formatted as "Name RollNumber Age Contact"
+                    //    if (iss >> name >> rollNumber >> age_ >> contact) {
+                    //        // Set the data to the attributes of the Student object
+                    //        students[student_count_System].set_name(name);
+                    //        students[student_count_System].set_rollnumber(rollNumber);
+                    //        students[student_count_System].set_age(age_);
+                    //        students[student_count_System].set_contact(contact);
+                    //        student_count_System++;
+                    //    }
+                    //    else {
+                    //        std::cerr << "Error parsing data from file!" << std::endl;
+                    //        break;  // Exit the loop if parsing fails
+                    //    }
+                    //}
+                    //inputFile.close();
+                    //
+
+                    for (int i = 0; i < student_count_System; i++)
+                    {
+                        students[i].display_enroll_students();             // display enroll students 
+                    }
+
+                    /*filehandling open_file;
                     cout << "-------------FOllowing are the existing students--------------\n";
-                    open_file.open("studentdata.txt");
+                    open_file.open("studentdata.txt");*/
 
                 }
                 else if (choice2 == 2)  // add student 
                 {
-
-                    string n, c, r;
-                    int a;
-                    cout << "Enter name of student : ";
-                    cin.ignore();
-                    cin >> n;
-                    cout << "Enter contact number of student :";
-                    cin.ignore();
-                    cin >> c;
-                    cout << "Enter roll number of student :";
-                    cin.ignore();
-                    cin >> r;
-                    cout << "Enter age of student : ";
-                    cin >> a;
-                    student obj;
-                    obj.enroll_student(n, r, a, c);
-                    add_student(obj);  // add students using fucntion
+                    if (student_count_System < 100)
+                    {
+                        string n, c, r;
+                        int a;
+                        cout << "Enter name of student : ";
+                        cin.ignore();
+                        cin >> n;
+                        cout << "Enter contact number of student :";
+                        cin.ignore();
+                        cin >> c;
+                        cout << "Enter roll number of student :";
+                        cin.ignore();
+                        cin >> r;
+                        cout << "Enter age of student : ";
+                        cin >> a;
+                        student obj;
+                        obj.enroll_student(n, r, a, c);
+                        add_student(obj);  // add students using fucntion
+                    }
+                    else
+                        cout << "\n\nStudent Limit reached Try next year !...\n\n";
                 }
                 else if (choice2 == 3)  // remove student 
                 {
@@ -504,16 +594,41 @@ public:
             // Regitser courses 
             else if (choice == 2)           // course registration 
             {
-                avalibl_courses();
                 displayCourseSubMenu();
                 int choice2;
                 cout << "ENter sub menu choice : ";
                 cin >> choice2;
+
+
                 if (choice2 == 1)      // display courses 
                 {
-                    display_courses_system();        // display hardcore coourses that we have assing
+                    filehandling obj;
+                    obj.open("courses.txt");
+
+                    ifstream inputFile("courses.txt");
+                    string line;
+
+                    // Read data from the file until the end of the file is reached
+                    while (getline(inputFile, line)) 
+                    {
+                        // Find the position of "Course Code :"
+                        size_t codePos = line.find("Course Code :");
+
+                        if (codePos != string::npos) 
+                        {
+                            size_t startPos = codePos + 13;
+                            size_t endPos = line.find_first_of(" \t", startPos);
+
+                            string courseCode = line.substr(startPos, endPos - startPos);
+                            cout << "Course Code: " << courseCode << endl;
+                        }
+                    }
                 }
-                else if (choice2 == 2)       // register courses 
+                else if (choice2 == 2)   // add new course 
+                {
+                    add_new_courses(); // add new course 
+                }
+                else if (choice2 == 3)       // register courses 
                 {
                     string roll_to_check;
                     int student_index = 0;
@@ -563,7 +678,6 @@ public:
                         cout << "No student with that roll number exist Sorry !";
                 }
             }
-
             // attendence 
             else if (choice == 3)
             {
@@ -616,7 +730,6 @@ public:
                         cout << "\nStudent found and attendence marked \n";
                 }
             }
-
             // Marks of students 
             else if (choice == 4)
             {
@@ -666,7 +779,6 @@ public:
                     }
                 }
             }
-
             // withdraw course of student 
             else if (choice == 5)
             {
@@ -719,19 +831,18 @@ public:
         }
     }
 
-
+    // this will register new courses 
     void Register_courses()
     {
         // student::allocate_course_();
-        int c;  // code of course to register
-        cout << "\nEnter code number of course to register\n";
+        int c;
+        cout << "ENter code of ocurse :";
         cin >> c;
-
         bool check_course_avalibility = false;
 
-        for (int i = 0; i < student_count_System; i++)  // run only for students 
+        for (int i = 0; i < 100 ; i++)  
         {
-            if (courses[i].get_code() == c /*&& courses[i].get_capacity() < student_Course_count*/)  // allocate students in course
+            if (courses[i].get_code() == c)
             {
                 students[student_count_System++].add_course_student(courses[i].get_name());
                 courses[i].addStudent(students[i]);   // add student into course (us course mai student ko addkrdo)
@@ -749,6 +860,7 @@ public:
 
 
     }
+    // this function will edit student details on compile ti
     void edit_student_detail(string roll)
     {
         bool check = false;
@@ -797,24 +909,20 @@ public:
     // it will remove students from the file it has also method to remove during compile_time 
     void remove_student(string roll)    
     {
-        //student* temp = new student[20];
-        //for (int i = 0; i < 19; i++)
-        //{
-        //    if (students[i].get_roll_number() != roll)
-        //    {
-        //        temp[i] = students[i];
-        //    }
-        //}
-        //delete[] students;
-        //students = new student[20];         // again assign max student 
-        //student_count_System--;  // descrse studenet count 
-        //for (int i = 0; i < 20; i++)
-        //{
-        //    students[i] = temp[i];
-        //}
-        //cout << "\n-------Removed successfully----------\n";
-        //delete[] temp;
+        for (int i = 0; i < 50; i++)
+        {
+            if (students[i].get_roll_number() == roll)
+            {
+                students[i].set_age(0);
+                students[i].set_name("");
+                students[i].set_contact("");
+                students[i].set_contact("");
 
+                cout << "Deleted successfulyy \n";
+                student_count_System--;  // descrse studenet count 
+                break;
+            }
+        }  
         string tempFilename = "temp.txt"; // Temporary file
         string filename = "studentdata.txt";
         ifstream inputFile(filename);
@@ -828,22 +936,20 @@ public:
                 tempFile << line << endl;
             }
         }
-
         inputFile.close();
         tempFile.close();
-
         if (remove(filename.c_str()) != 0) {    // deleting original file data 
             cerr << "Error\n" << endl;
             return;
         }
-
         if (rename(tempFilename.c_str(), filename.c_str()) != 0) { // modifying data in the original file 
             cerr << "Error\n" << endl;
             return;
         }
-
-        cout << "Lines matching the pattern removed successfully." << endl;
+     
     }
+
+    // this function will add new students in a system 
     void add_student(student& obj)
     {
         students[student_count_System] = obj;
@@ -860,11 +966,13 @@ public:
 
         student_count_System++;
     }
-    void display_student_system() const
+
+    // this function will display the detail of all student and save data in file_handling 
+    void display_student_system()
     {
         filehandling obj("student_All_Data.txt");   // store student data with courses 
         cout << ":: Students ::\n";
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 100; i++)
         {
             if (students[i].get_roll_number() != " ")
             {
@@ -874,6 +982,7 @@ public:
             }
         }
     }
+    // this function will display the detail of student 
     void display_courses_system()
     {
         for (int i = 0; i < 20; i++)
@@ -881,24 +990,68 @@ public:
             courses[i].display_course();
         }
     }
+
+
+    void load_student_data()
+    {
+        student_count_System = 0;
+        ifstream inputFile("studentdata.txt");
+
+        if (!inputFile.is_open())
+        {
+            cout << "Error opening file!" << std::endl;
+            return;
+        }
+        // Assuming one line contains all the data
+        string line;
+        while (getline(inputFile, line))
+        {
+
+            istringstream iss(line);
+
+            string name, rollNumber, contact;
+            int age_;
+
+            // Assuming the data in the file is formatted as "Name RollNumber Age Contact"
+            if (iss >> name >> rollNumber >> age_ >> contact) {
+                // Set the data to the attributes of the Student object
+
+                students[student_count_System].set_name(name);
+                students[student_count_System].set_rollnumber(rollNumber);
+                students[student_count_System].set_age(age_);
+                students[student_count_System].set_contact(contact);
+                student_count_System++;
+            }
+            else 
+            {
+                cout << "Error parsing data from file!" << std::endl;
+                break;  // Exit the loop if parsing fails
+            }
+        }
+        inputFile.close();
+    }
 };
 int System::student_count_System = 0;
-
+int System::course_count_system = 0;
 bool Authentication(string Student_ID)
 {
-    ifstream inputFile("studentdata.txt");
+    ifstream inputFile("authentification.txt");
 
-    if (!inputFile.is_open()) {
+
+    if (!inputFile.is_open()) 
+    {
         cerr << "Error opening student data file." << endl;
         return false;
     }
 
-    regex patternRegex(".*\\bRoll_NO\\s*:\\s*" + Student_ID + "\\b.*");
+    regex patternRegex(Student_ID);
     string line;
     bool check = false;
 
-    while (getline(inputFile, line)) {
-        if (regex_match(line, patternRegex)) {
+    while (getline(inputFile, line)) 
+    {
+        if (regex_match(line, patternRegex)) 
+        {
             check = true;
             break;  // No need to continue searching if found
         }
@@ -918,6 +1071,7 @@ int main()
         {
             cout << "----------------Welcome " << ID << " to FAST - NU LHR menu Page-------------- - \n";
             System obj;
+            obj.load_student_data();
             obj.displayMainMenu();
             obj.performMainMenuAction();
         }
