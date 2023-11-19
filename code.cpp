@@ -20,8 +20,8 @@ protected:
     string courses[5];   // max courses
     char attendance[max_courses];
     int marks[max_courses];
+    int course_index;
 public:
-    static int course_index;
     static int attendence_index;
     static int marks_index;
     student()
@@ -161,6 +161,10 @@ public:
     //{
     //    courses[course_index++] = name_of_course;
     //}
+    int get_course_count_student()
+    {
+        return course_index;
+    }
     string get_roll_number()
     {
         return roll_num;
@@ -186,7 +190,7 @@ public:
         return contact;
     }
 };
-int student::course_index = 0;
+//int student::course_index = 0;
 int student::attendence_index = 0;
 int student::marks_index = 0;
 class Course : public student {
@@ -252,6 +256,26 @@ public:
 
         delete[] temp;
     }
+    void set_course_name(string n)
+    {
+        name = n;
+    }
+    void set_course_code(int a)
+    {
+        code = a;
+    }
+    void set_course_inst(string i)
+    {
+        instructor = i;
+    }
+    void set_capacity(int a)
+    {
+        capacity = a;
+    }
+    void set_credits(int c)
+    {
+        credits = c;
+    }
     int get_code()
     {
         return code;
@@ -274,8 +298,7 @@ public:
     }
     void display_course()
     {
-        cout << " Code " << code << " Name " << name << " Credits " << credits << " instructor " << instructor << endl;
-
+        cout << " Code :" << code << " Name :" << name << " Credits :" << credits << " instructor :" << instructor << " Capacity :" << capacity << endl;
     }
     void displayStudents()
     {
@@ -324,11 +347,11 @@ public:
         outFile.open(fileName, ios::app);  // open file in append mode 
         if (outFile.is_open())
         {
-            outFile << "Course Code :" << obj.get_code() << "    ";
-            outFile << "Name :" << obj.get_name() << "    ";
-            outFile << "Capacity :" << obj.get_capacity() << "    ";
-            outFile << "Instructor :" << obj.get_instructor() << "  ";
-            outFile << "Credits :" << obj.get_credits() << "\n";
+            outFile << obj.get_code() << "    ";
+            outFile << obj.get_name() << "    ";
+            outFile << obj.get_capacity() << "    ";
+            outFile << obj.get_instructor() << "  ";
+            outFile << obj.get_credits() << "\n";
             outFile.close();
         }
         else
@@ -338,25 +361,33 @@ public:
     }
     void write_student_courses(student& obj)
     {
-        outFile.open(fileName, ios::app);  // open file in append mode 
+        outFile.open(fileName, ios::app);  
         if (outFile.is_open())
         {
-            outFile << "Student name : " << obj.get_name() << "    ";
-            outFile << "Student Roll NUmber :" << obj.get_roll_number() << "    ";
-            outFile << "Student Age :" << obj.get_age() << "    ";
-            outFile << "Student Contact :" << obj.get_contact() << '\n'; // Add a newline character to separate entries
-            outFile << "\n\n  COURSES  \n\n ";
-            for (int i = 0; i < 5; i++)
+            outFile << obj.get_name() << "    ";
+            outFile << obj.get_roll_number() << "    ";
+            outFile << obj.get_age() << "    ";
+            outFile << obj.get_contact() << " "; 
+            for (int i = 0; i < 5; i++)   // max 5 courses 
             {
-                if (obj.get_course_student(i) != " ")
-                {
-                    outFile << obj.get_course_student(i) << endl;
-                }
+                outFile << obj.get_course_student(i) << " ";   
             }
+            outFile << "\n";
+            outFile.close();
         }
         else
         {
             cout << "File is not opening -- try Again !" << endl;
+        }
+    }
+    void write_student_courses_data_with_details(student & name , Course & obj)
+    {
+        outFile.open(fileName, ios::app);  // open in append mode 
+        {
+            if (outFile.is_open())
+            {
+                
+            }
         }
     }
 
@@ -382,6 +413,8 @@ protected:
 public:
     static int student_count_System;
     static int course_count_system;
+    static int Index_of_course_system;
+
     System()
     {
         /*courses = nullptr;
@@ -422,30 +455,6 @@ public:
 
         course_count_system++;
     }
-    //void avalibl_courses()
-    //{
-    //    courses[0] = Course(1234, "PF", "Amirwali", 3, 50);
-    //    courses[1] = Course(1235, "IICT", "Amirwali", 3, 50);
-    //    courses[2] = Course(1236, "OOP", "Amirwali", 3, 50);
-    //    courses[3] = Course(1237, "AP", "Amirwali", 3, 50);
-    //    courses[4] = Course(1238, "Islamiat", "Amirwali", 3, 50);
-    //    courses[5] = Course(1239, "Data", "Amirwali", 3, 50);
-    //    courses[6] = Course(1212, "Algo", "Amirwali", 3, 50);
-    //    courses[7] = Course(1213, "DS", "Amirwali", 3, 50);
-    //    courses[8] = Course(1214, "Linear Algebra", "Amirwali", 3, 50);
-    //    courses[9] = Course(1215, "Pks", "Amirwali", 3, 50);
-    //    courses[10] = Course(1216, "Hhh", "Amirwali", 3, 50);
-    //    courses[11] = Course(1217, "PF", "Amirwali", 3, 50);
-    //    courses[12] = Course(1218, "PF", "Amirwali", 3, 50);
-    //    courses[13] = Course(1219, "PF", "Amirwali", 3, 50);
-    //    courses[14] = Course(1220, "PF", "Amirwali", 3, 50);
-    //    courses[15] = Course(1221, "PF", "Amirwali", 3, 50);
-    //    courses[16] = Course(1222, "PF", "Amirwali", 3, 50);
-    //    courses[17] = Course(1223, "PF", "Amirwali", 3, 50);
-    //    courses[18] = Course(1224, "PF", "Amirwali", 3, 50);
-    //    courses[19] = Course(1225, "PF", "Amirwali", 3, 50);    // 0 - 19 = 20 
-    //    course_count_system += 20;
-    //}
     void displayMainMenu()
     {
         cout << "1 - Enroll a student " << endl;
@@ -467,8 +476,8 @@ public:
     {
         cout << "1 - Available Courses" << endl;
         cout << "2 - Add new courses " << endl;
-        cout << "2 - Register course" << endl;
-        cout << "3 - back" << endl;
+        cout << "3 - Register course" << endl;
+        cout << "4 - back" << endl;
     }
     void displayattendencesubmenu()
     {
@@ -544,13 +553,14 @@ public:
 
                     for (int i = 0; i < student_count_System; i++)
                     {
-                        students[i].display_enroll_students();             // display enroll students 
+                       if (students[i].get_name() != "") {
+                            students[i].display_enroll_students();             // display enroll students 
+                       }
                     }
 
                     /*filehandling open_file;
                     cout << "-------------FOllowing are the existing students--------------\n";
                     open_file.open("studentdata.txt");*/
-
                 }
                 else if (choice2 == 2)  // add student 
                 {
@@ -594,7 +604,7 @@ public:
             // Regitser courses 
             else if (choice == 2)           // course registration 
             {
-                displayCourseSubMenu();
+                displayCourseSubMenu();    // display sub menu 
                 int choice2;
                 cout << "ENter sub menu choice : ";
                 cin >> choice2;
@@ -602,31 +612,32 @@ public:
 
                 if (choice2 == 1)      // display courses 
                 {
-                    filehandling obj;
-                    obj.open("courses.txt");
+                    //filehandling obj;
+                    //obj.open("courses.txt");
+                    //ifstream inputFile("courses.txt");
+                    //string line;
+                    //// Read data from the file until the end of the file is reached
+                    //while (getline(inputFile, line)) 
+                    //{
+                    //    // Find the position of "Course Code :"
+                    //    size_t codePos = line.find("Course Code :");
+                    //    if (codePos != string::npos) 
+                    //    {
+                    //        size_t startPos = codePos + 13;
+                    //        size_t endPos = line.find_first_of(" \t", startPos);
+                    //        string courseCode = line.substr(startPos, endPos - startPos);
+                    //        cout << "Course Code: " << courseCode << endl;
+                    //    }
+                    //}
 
-                    ifstream inputFile("courses.txt");
-                    string line;
-
-                    // Read data from the file until the end of the file is reached
-                    while (getline(inputFile, line)) 
+                    for (int i = 0; i < course_count_system; i++)
                     {
-                        // Find the position of "Course Code :"
-                        size_t codePos = line.find("Course Code :");
-
-                        if (codePos != string::npos) 
-                        {
-                            size_t startPos = codePos + 13;
-                            size_t endPos = line.find_first_of(" \t", startPos);
-
-                            string courseCode = line.substr(startPos, endPos - startPos);
-                            cout << "Course Code: " << courseCode << endl;
-                        }
+                        courses[i].display_course();
                     }
                 }
                 else if (choice2 == 2)   // add new course 
                 {
-                    add_new_courses(); // add new course 
+                    add_new_courses(); 
                 }
                 else if (choice2 == 3)       // register courses 
                 {
@@ -647,35 +658,58 @@ public:
                     }
                     if (check_avalibilty)
                     {
-                        // Register_courses();
-                        int c;  // code of course to register
-                        cout << "\nEnter code number of course to register\n";
-                        cin >> c;
-
-                        bool check_course_avalibility = false;
-
-                        for (int i = 0; i < 20; i++)  // courses time chly gha 
+                        char choice_To_add;
+                        do
                         {
-                            if (courses[i].get_code() == c)
+                            int c;  // code of course to register
+                            cout << "\nEnter code number of course to register\n";
+                            cin >> c;
+
+                            bool check_course_avalibility = false;
+                            for (int i = 0; i < course_count_system; i++)
                             {
-                                students[student_index].add_course_student(courses[i].get_name());
-                                courses[i].addStudent(students[i]);   // add student into course (us course mai student ko addkrdo)
+                                if (courses[i].get_code() == c)
+                                {
 
+                                    cout << "Course index :" << students[student_index].get_course_count_student() << endl;
+                                    if (students[student_index].get_course_count_student() > 4)
+                                    {
+                                        cout << "MAx course capacity reached \n";
+                                    }
+                                    else
+                                    {
+                                        students[student_index].add_course_student(courses[i].get_name());
+                                        check_course_avalibility = true;
 
-                                check_course_avalibility = true;
-                                break;
+                                        break;
+                                    }
+                                }
                             }
-                        }
-                        if (check_course_avalibility)
-                        {
-                            cout << "\nCongratulation ! Registred successfully\n";
-                        }
-                        else
-                            cout << " Sorry! No course with that course exist Try again...";
-
+                            if (check_course_avalibility)
+                            {
+                                cout << "\nCongratulation ! Registred successfully\n";
+                            }
+                            else
+                            {
+                                cout << " Sorry! No course with that course code exist Try again...";
+                            }
+                            cout << "Do U want to add more course into that student (Y/Yes | N/NO): ";
+                            cin >> choice_To_add;
+                        } while (choice_To_add != 'N' && choice_To_add != 'n');
                     }
                     else
                         cout << "No student with that roll number exist Sorry !";
+
+                    // write all data into file first delete data then write new data 
+                    {
+                        ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
+
+                        filehandling obj("student_all_data.txt");
+                        for (int i = 0; i < student_count_System; i++)
+                        {
+                            obj.write_student_courses(students[i]);   // write student data with courses 
+                        }
+                    }
                 }
             }
             // attendence 
@@ -831,41 +865,12 @@ public:
         }
     }
 
-    // this will register new courses 
-    void Register_courses()
-    {
-        // student::allocate_course_();
-        int c;
-        cout << "ENter code of ocurse :";
-        cin >> c;
-        bool check_course_avalibility = false;
-
-        for (int i = 0; i < 100 ; i++)  
-        {
-            if (courses[i].get_code() == c)
-            {
-                students[student_count_System++].add_course_student(courses[i].get_name());
-                courses[i].addStudent(students[i]);   // add student into course (us course mai student ko addkrdo)
-
-                check_course_avalibility = true;
-                break;
-            }
-        }
-        if (check_course_avalibility)
-        {
-            cout << "\nCongratulation ! Registred successfully\n";
-        }
-        else
-            cout << " Sorry! No course with that course exist Try again...";
-
-
-    }
     // this function will edit student details on compile ti
     void edit_student_detail(string roll)
     {
         bool check = false;
         int index = 0;
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < student_count_System; i++)
         {
             if (students[i].get_roll_number() == roll)
             {
@@ -902,9 +907,17 @@ public:
                 cin >> a;
                 students[index].set_age(a);
             }
+            ofstream Filee_NamE("studentdata.txt" , ios::trunc); // trunc remove all the existing data from the file 
+
+            for (int i = 0; i < student_count_System; i++)
+            {
+                filehandling obj("Studentdata.txt");
+                obj.write_Student_data_into_File(students[i]);    // again write data into file after trunc
+            }
         }
-        else
+        else {
             cout << "No student exist with that roll number ";
+        }
     }
     // it will remove students from the file it has also method to remove during compile_time 
     void remove_student(string roll)    
@@ -968,29 +981,29 @@ public:
     }
 
     // this function will display the detail of all student and save data in file_handling 
-    void display_student_system()
-    {
-        filehandling obj("student_All_Data.txt");   // store student data with courses 
-        cout << ":: Students ::\n";
-        for (int i = 0; i < 100; i++)
-        {
-            if (students[i].get_roll_number() != " ")
-            {
-                //students[i].display_student();
-                obj.write_student_courses(students[i]);   // save student data with courses 
-                cout << endl;
-            }
-        }
-    }
-    // this function will display the detail of student 
-    void display_courses_system()
+
+    //void display_student_system()
+    //{
+    //    filehandling obj("student_All_Data.txt");   // store student data with courses 
+    //    cout << ":: Students ::\n";
+    //    for (int i = 0; i < 100; i++)
+    //    {
+    //        if (students[i].get_roll_number() != " ")
+    //        {
+    //            //students[i].display_student();
+    //            obj.write_student_courses(students[i]);   // save student data with courses 
+    //            cout << endl;
+    //        }
+    //    }
+    //}
+
+    /*void display_courses_system()
     {
         for (int i = 0; i < 20; i++)
         {
             courses[i].display_course();
         }
-    }
-
+    }*/
 
     void load_student_data()
     {
@@ -1013,9 +1026,9 @@ public:
             int age_;
 
             // Assuming the data in the file is formatted as "Name RollNumber Age Contact"
-            if (iss >> name >> rollNumber >> age_ >> contact) {
+            if (iss >> name >> rollNumber >> age_ >> contact) 
+            {
                 // Set the data to the attributes of the Student object
-
                 students[student_count_System].set_name(name);
                 students[student_count_System].set_rollnumber(rollNumber);
                 students[student_count_System].set_age(age_);
@@ -1030,9 +1043,59 @@ public:
         }
         inputFile.close();
     }
+    void load_all_ava_courses()
+    {
+        course_count_system = 0;
+        ifstream inputFile("courses.txt");
+
+        if (!inputFile.is_open())
+        {
+            cout << "Error opening file!" << std::endl;
+            return;
+        }
+
+        
+        string line;
+        while (getline(inputFile, line))
+        {
+            
+            if (course_count_system < 100) {
+                istringstream iss(line);
+
+                int code, capacCiTy, credit;
+                string name, inst;
+
+                // Assuming the data in the file is formatted as "Code Name Inst Capacity Credits"
+                if (iss >> code >> name >> capacCiTy >> inst  >> credit)    // iss is input stream 
+                {
+                    // Set the data to the attributes of the Course object
+                    courses[course_count_system].set_course_code(code);
+                    courses[course_count_system].set_course_name(name);
+                    courses[course_count_system].set_capacity(capacCiTy);
+                    courses[course_count_system].set_course_inst(inst);
+                    courses[course_count_system].set_credits(credit);
+
+                    course_count_system++;
+                }
+                else
+                {
+                    cout << "Error parsing data from file!" << std::endl;
+                    break;  // Exit the loop if parsing fails
+                }
+            }
+            else
+            {
+                cout << "Not enough space in the courses array!" << std::endl;
+                break;
+            }
+        }
+        inputFile.close();
+    }
 };
 int System::student_count_System = 0;
 int System::course_count_system = 0;
+int System::Index_of_course_system = 0;
+// this will check if student is enroll in university or not 
 bool Authentication(string Student_ID)
 {
     ifstream inputFile("authentification.txt");
@@ -1047,7 +1110,7 @@ bool Authentication(string Student_ID)
     regex patternRegex(Student_ID);
     string line;
     bool check = false;
-
+  
     while (getline(inputFile, line)) 
     {
         if (regex_match(line, patternRegex)) 
@@ -1058,6 +1121,7 @@ bool Authentication(string Student_ID)
     }
     return check;
 }
+
 int main()
 {
     char ch;
@@ -1071,14 +1135,15 @@ int main()
         {
             cout << "----------------Welcome " << ID << " to FAST - NU LHR menu Page-------------- - \n";
             System obj;
-            obj.load_student_data();
-            obj.displayMainMenu();
+            obj.load_student_data();    
+            obj.load_all_ava_courses();
+            obj.displayMainMenu();      
             obj.performMainMenuAction();
         }
         else
             cout << "Student not found in FAST-NU..Try Again Thank You !";
         
-        cout << "press Y to End this program.....  ";
+        cout << "\n\n--------press Y to End this program N for no------\n";
 
     }
     while (cin >> ch && (ch != 'Y' && ch != 'y' ));
