@@ -4,8 +4,9 @@
 #include<string.h>
 #include<fstream>
 #include<regex>
+#include<SFML/Graphics.hpp>
 using namespace std;
-
+using namespace sf; // for SFML 
 const int max_courses = 5;
 const int MAX_courses = 20;  // courses offered
 
@@ -82,7 +83,7 @@ public:
                 marks[i] = 0;
             }
         }
-        
+
     }
     void display_student()
     {
@@ -92,9 +93,9 @@ public:
         cout << contact << " ";
         cout << "Courses :\n";
 
-        for (int i = 0; i < course_index ; i++)  // max 5 courses 
+        for (int i = 0; i < course_index; i++)  // max 5 courses 
         {
-            cout << courses[i] << " " << endl ;
+            cout << courses[i] << " " << endl;
             /*if (courses[i] != " ")
             {
                 cout << courses[i];
@@ -116,7 +117,7 @@ public:
         cout << "Roll no is " << roll_num << " ";
         cout << "Age  is " << age << " ";
         cout << "COntact is " << contact << " ";
-        
+
         cout << endl;
     }
     void set_name(string n)
@@ -372,7 +373,7 @@ public:
             }
         }
     }
-    void write_marks(student & obj , int x)  // x is number of courses 
+    void write_marks(student& obj, int x)  // x is number of courses 
     {
         outFile.open(fileName, ios::app | ios::in);
         {
@@ -401,7 +402,7 @@ public:
                 for (int i = 0; i < x; i++)
                 {
                     outFile << obj.get_course_student(i) << " ";
-                    outFile << obj.get_attendence(i)<< "\n";
+                    outFile << obj.get_attendence(i) << "\n";
                 }
             }
         }
@@ -601,17 +602,16 @@ public:
         string ins;
         int capa;
         bool check = false;
-        do 
+        do
         {
             cout << "\nEnter code number of course to register\n";
             cin >> c;
             validaltion obj;
             bool x = obj.chk_valid_course_code(c);
             check = x;
-        }
-        while (!check && cout << "RE-Enter code Code name is not valid");
+        } while (!check && cout << "RE-Enter code Code name is not valid");
         check = false;
-        do{
+        do {
 
             cout << "Enter name of course : ";
             cin >> n;
@@ -619,11 +619,11 @@ public:
             bool x = obj.chk_valid_course(n);
             check = x;
 
-        }while (!check && cout << "Re-enter name is not valid ");
+        } while (!check && cout << "Re-enter name is not valid ");
 
         check = false;
 
-        do{
+        do {
             cout << "Enter credits of course : ";
             cin >> Crdeit;
             validaltion obj;
@@ -732,7 +732,7 @@ public:
                         string n, c, r;
                         int a;
                         bool check = false;
-                       
+
                         cout << "Enter name of student : ";
                         cin.ignore();
                         cin >> n;
@@ -740,12 +740,12 @@ public:
                         do
                         {
 
-                           cout << "Enter contact number of student :";
-                           cin.ignore();
-                           cin >> c;
-                           validaltion obj;
-                           bool x = obj.valid_contact(c);
-                           check = x;
+                            cout << "Enter contact number of student :";
+                            cin.ignore();
+                            cin >> c;
+                            validaltion obj;
+                            bool x = obj.valid_contact(c);
+                            check = x;
                         } while (!check && cout << "Invalid combination - Enter again ");
                         check = false;
                         do
@@ -843,7 +843,7 @@ public:
                                 if (courses[i].get_code() == c)
                                 {
 
-                                   // cout << "Course index :" << students[student_index].get_course_count_student() << endl;
+                                    // cout << "Course index :" << students[student_index].get_course_count_student() << endl;
                                     if (students[student_index].get_course_count_student() > 4)
                                     {
                                         cout << "MAx course capacity reached \n";
@@ -1008,8 +1008,8 @@ public:
                             cout << "\n----MArks assigned Succesfully-----\n";
 
                             filehandling obj("students_marks.txt");
-                            obj.write_marks(students[index_ofSTu] ,  x );
-                            
+                            obj.write_marks(students[index_ofSTu], x);
+
                         }
                         else
                         {
@@ -1087,7 +1087,7 @@ public:
                                     cout << "\n----------Withdraw successfully---------------\n";
                                     break;
                                 }
-                                
+
                             }
                         }
                     }
@@ -1393,28 +1393,119 @@ bool Authentication(string Student_ID)
 
 int main()
 {
+    // this will load image 
+
+    //RenderWindow window(VideoMode(900, 600), "FLEX managment System");
+    ////Event evnt;
+    ////Texture texture;
+    ////texture.loadFromFile("C:/Users/echo/Desktop/hacker-3342696_640.jpg");
+    //////texture.display();
+    ////Sprite sprites(texture);
+    ////window.draw(sprites);
+    ////window.display();
+    //// font 
+    //Font font;
+    //font.loadFromFile("arial.ttf");
+    //if (!font.loadFromFile("arial.ttf"))
+    //{
+    //    cout << "Error loading file \n";
+    //}
+    //// text display 
+    //Text text;
+    //text.setFont(font); // Set the font
+    //text.setString("For Authentification Enter Your ROll Number"); // Set the text content
+    //text.setCharacterSize(24); // Set the character size
+    //text.setFillColor(Color::White); // Set the fill color
+    //text.setPosition(200, 100); // Set the position
+    //window.draw(text);
+    //window.display();
+
     char ch;
     do
     {
-        string ID;
-        cout << "Enter your Roll NUmber for authentification : ";
-        cin >> ID;
-        bool checking_student = Authentication(ID);   // check authentification of user 
-        if (checking_student)
-        {
-            cout << "----------------Welcome " << ID << " to FAST - NU LHR menu Page-------------- - \n";
-            System obj;
-            //obj.load_student_data();
-            obj.load_student_with_their_courses();
-            obj.load_all_ava_courses();
-            obj.displayMainMenu();
-            obj.performMainMenuAction();
-        }
-        else
-            cout << "Student not found in FAST-NU..Try Again Thank You !";
+            RenderWindow window(VideoMode(900, 600), "FLEX managment System");
+            // font 
+          
+                Font font;
+                font.loadFromFile("arial.ttf");
+                if (!font.loadFromFile("arial.ttf"))
+                {
+                    cout << "Error loading file \n";
+                }
+                // text display 
+                Text text;
+                text.setFont(font); // Set the font
+                text.setString("For Authentification Enter Your ROll Number"); // Set the text content
+                text.setCharacterSize(24); // Set the character size
+                text.setFillColor(Color::White); // Set the fill color
+                text.setPosition(200, 100); // Set the position
+                window.draw(text);
 
-        cout << "\n\n--------press Y to End this program N for no------\n";
-
+                // Create a rectangle shape
+                RectangleShape rectangle;
+                rectangle.setSize(sf::Vector2f(500, 100)); // Set the size of the rectangle
+                rectangle.setPosition(200, 200);           // Set the position of the rectangle
+                rectangle.setFillColor(sf::Color::Transparent); // Set the fill color to transparent
+                rectangle.setOutlineColor(sf::Color::White);    // Set the outline color
+                rectangle.setOutlineThickness(2.0f);             // Set the outline thickness
+                window.draw(rectangle);
+                Event evnt;
+                string ID;
+                // setting detail for user input 
+                Text userInputText;
+                userInputText.setFont(font);
+                userInputText.setCharacterSize(24);
+                userInputText.setFillColor(sf::Color::White);
+                userInputText.setPosition(50, 50);
+                window.display();
+                while (window.isOpen())
+                {
+                    while (window.pollEvent(evnt))
+                    {
+                        if (evnt.type == sf::Event::Closed) {
+                            window.close();
+                        }
+                        else if (evnt.type == Event::TextEntered)
+                        {
+                            if (evnt.text.unicode < 128 && evnt.text.unicode > 31)
+                            {
+                                ID += evnt.text.unicode;
+                                userInputText.setString(ID); // set input strig in SFML Window 
+                                window.draw(userInputText);
+                                window.display();
+                            }
+                            else if (evnt.text.unicode == 8) // backspace
+                            {
+                                ID.pop_back();
+                            }
+                        }
+                        else if (Keyboard::isKeyPressed(Keyboard::Enter))
+                        {
+                           
+                            bool checking_student = Authentication(ID);   // check authentification of user 
+                            if (checking_student)
+                            {
+                                cout << "FOUND : ";
+                                window.clear();  // clear previous screen 
+                                Text text_show;
+                                text_show.setFont(font); // Set the font
+                                text_show.setString("Welcome to FAST - NUCES Portal"); // Set the text content
+                                text_show.setCharacterSize(24); // Set the character size
+                                text_show.setFillColor(Color::White); // Set the fill color
+                                text_show.setPosition(200, 200); // Set the position
+                                window.draw(text_show);
+                                window.display();
+                                /* cout << "----------------Welcome " << ID << " to FAST - NU LHR menu Page-------------- - \n";*/
+                                System obj;
+                                //obj.load_student_data();
+                                obj.load_student_with_their_courses();
+                                obj.load_all_ava_courses();
+                                obj.displayMainMenu();
+                                obj.performMainMenuAction();
+                            }
+                    }
+                }
+            }
     } while (cin >> ch && (ch != 'Y' && ch != 'y'));
     cout << "-----THank u for using our service----------\n ";
     return 0;
