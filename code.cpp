@@ -7,11 +7,120 @@
 #include<SFML/Graphics.hpp>
 using namespace std;
 using namespace sf; // for SFML 
+
+
 const int max_courses = 5;
 const int MAX_courses = 20;  // courses offered
+RenderWindow window(VideoMode(900, 600), "FLEX managment System");
+
+
 
 class filehandling;    // forward decleration 
 class validaltion;
+
+class SFMLWindow {
+private:
+    RenderWindow window;
+
+public:
+    SFMLWindow(const VideoMode& mode, const String& title) : window(mode, title) 
+    {
+        window.setFramerateLimit(60);
+    }
+
+    void clear(const  Color& color) {
+        window.clear(color);
+    }
+
+    void draw(const  Drawable& drawable) {
+        window.draw(drawable);
+    }
+
+    void display() {
+        window.display();
+    }
+
+    bool pollEvent( Event& event) {
+        return window.pollEvent(event);
+    }
+};
+
+class SFMLMenuScreen
+{
+private:
+    int selectindex;
+    Font font;
+    Text text[6];  // as we have 5 menus 
+public:
+    SFMLMenuScreen(){}
+    SFMLMenuScreen(float w, float h)
+    {
+        if (!(font.loadFromFile("arial.ttf")))
+        {
+            cout << "Error loadinf file :\n";
+        }
+        text[0].setFont(font);
+        text[0].setFillColor(Color::Blue);
+        text[0].setString("1- Enroll a student");
+        text[0].setPosition(Vector2f(w / 2, h / (6 + 1) * 1));
+
+        text[1].setFont(font);
+        text[1].setFillColor(Color::White);
+        text[1].setString("2- Course Registration");
+        text[1].setPosition(Vector2f(w / 2, h / (6 + 1) * 2));
+
+        text[2].setFont(font);
+        text[2].setFillColor(Color::White);
+        text[2].setString("3 - Attendence ");
+        text[2].setPosition(Vector2f(w / 2, h / (6 + 1) * 3));
+
+        text[3].setFont(font);
+        text[3].setFillColor(Color::White);
+        text[3].setString("4 - Marks");
+        text[3].setPosition(Vector2f(w / 2, h / (6 + 1) * 4));
+
+        text[4].setFont(font);
+        text[4].setFillColor(Color::White);
+        text[4].setString("5 - Course Withdraw");
+        text[4].setPosition(Vector2f(w / 2, h / (6 + 1) * 5));
+
+        text[5].setFont(font);
+        text[5].setFillColor(Color::White);
+        text[5].setString("5 - Exit ");
+        text[5].setPosition(Vector2f(w / 2, h / (6 + 1) * 6));
+
+        selectindex = 0;
+    }
+    void draw(RenderWindow& window)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            window.draw(text[i]);
+        }
+    }
+    int mainmenupress()
+    {
+        return selectindex;
+    }
+    void moveUp()
+    {
+        if (selectindex - 1 >= 0)
+        {
+            text[selectindex].setFillColor(Color::White);
+            selectindex--;
+            text[selectindex].setFillColor(Color::Blue);
+        }
+    }
+    void moveDown()
+    {
+        if (selectindex + 1 < 6)
+        {
+            text[selectindex].setFillColor(Color::White);
+            selectindex++;
+            text[selectindex].setFillColor(Color::Blue);
+        }
+    }
+};
 class student
 {
 protected:
@@ -661,6 +770,46 @@ public:
         cout << "5 - Course Withdraw " << endl;
         cout << "6 - Exit " << endl;
     }
+    void displayMainMenu2()
+    {
+        window.clear();
+        Text menuItems[6];
+
+        Font font;
+        font.loadFromFile("arial.ttf");
+        for (int i = 0; i < 6; ++i)
+        {
+            menuItems[i].setFont(font);
+            menuItems[i].setCharacterSize(24);
+            menuItems[i].setFillColor(Color::White);
+        }
+        Text text_show;
+        text_show.setFont(font);
+        text_show.setString("Welcome to FAST - NUCES Portal");
+        text_show.setCharacterSize(24);
+        text_show.setFillColor(Color::White);
+        text_show.setPosition(250, 50);
+        window.draw(text_show);
+        menuItems[0].setString("1 - Enroll a student");
+        menuItems[1].setString("2 - Course Registration");
+        menuItems[2].setString("3 - Attendance");
+        menuItems[3].setString("4 - Marks");
+        menuItems[4].setString("5 - Course Withdraw");
+        menuItems[5].setString("6 - Exit");
+
+        Vector2f position = { 100, 100 };
+        for (int i = 0; i < 6; ++i)
+        {
+            menuItems[i].setPosition(position);
+            position.y += menuItems[i].getLocalBounds().height + 40;
+        }
+        for (const Text& text : menuItems)
+        {
+            window.draw(text);
+        }
+        window.display();
+    }
+
     void displayStudentSubMenu()
     {
         cout << "1 - display already enrolled students" << endl;
@@ -694,8 +843,11 @@ public:
         cout << "2 - Drop a course" << endl;
         cout << "3 - back" << endl;
     }
+
+
     void performMainMenuAction()
     {
+        displayMainMenu2();
         int choice;
         while (cout << "Enter any chocie from above main\n" && cin >> choice && choice != 6)
         {
@@ -1097,6 +1249,198 @@ public:
         }
     }
 
+    void performMainMenuAction2()
+    {
+        SFMLMenuScreen menu(window.getSize().x , window.getSize().y);
+        while (window.isOpen())
+        {
+            Event aevent;
+            while (window.pollEvent(aevent))
+            {
+                if (aevent.type == Event::Closed) {
+                    window.close();
+                }
+                if (aevent.type == Event::KeyReleased)
+                {
+                    if (aevent.key.code == Keyboard::Up)
+                    {
+                        menu.moveUp();
+                        break;
+                    }
+                    if (aevent.key.code == Keyboard::Down)
+                    {
+                        menu.moveDown();
+                        break;
+                    }
+                    if (aevent.key.code == Keyboard::Return)
+                    {
+                        RenderWindow Enroll(VideoMode(960, 720), "Enroll student");
+                        RenderWindow Register(VideoMode(960, 720), "Register student");
+                        RenderWindow Marks(VideoMode(960, 720), "Attedence");
+                        RenderWindow Attendence(VideoMode(960, 720), "Marks");
+                        RenderWindow Withdraw(VideoMode(960, 720), "Course Withdraw");
+                        RenderWindow Exit(VideoMode(960, 720), "Exit");
+                         
+                        int x = menu.mainmenupress();
+                        if (x == 0)
+                        {
+                            while (Enroll.isOpen())
+                            {
+                                Event eaevent;
+                                while (Enroll.pollEvent(eaevent))
+                                {
+                                    if (eaevent.type == Event::Closed)
+                                    {
+                                        Enroll.close();
+                                    }
+                                    if (eaevent.type == Event::KeyPressed)
+                                    {
+                                        if (eaevent.key.code == Keyboard::Escape)
+                                        {
+                                            Enroll.close();
+                                        }
+                                    }
+                                }
+                                Register.close();
+                                Marks.close();
+                                Attendence.close();
+                                Withdraw.close();
+                                Exit.close();
+                                Enroll.clear();
+                                Enroll.display();
+                            }
+                        }
+                        if (x == 1) {
+                            while (Register.isOpen()) {
+                                Event eaevent;
+
+                                while (Register.pollEvent(eaevent)) {
+                                    if (eaevent.type == Event::Closed) {
+                                        Register.close();
+                                        break; // Break out of the inner loop
+                                    }
+
+                                    if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Escape) {
+                                        Register.close();
+                                    }
+                                }
+
+                                Enroll.close();
+                                Marks.close();
+                                Attendence.close();
+                                Withdraw.close();
+                                Exit.close();
+
+                                Register.clear();
+                                Register.display();
+                            }
+                        }
+                        if (x == 2)
+                        {
+                            while (Marks.isOpen())
+                            {
+                                Event eaevent;
+                                while (Marks.pollEvent(eaevent))
+                                {
+                                    if (eaevent.type == Event::Closed)
+                                    {
+                                        Marks.close();
+                                    }
+                                    if (eaevent.type == Event::KeyPressed)
+                                    {
+                                        if (eaevent.key.code == Keyboard::Escape)
+                                        {
+                                            Marks.close();
+                                        }
+                                    }
+                                }
+                                Enroll.close();
+                                Register.close();
+                                Attendence.close();
+                                Withdraw.close();
+                                Exit.close();
+                                Marks.clear();
+
+                                Marks.display();
+                            }
+                        }
+                        if (x == 3)
+                        {
+                            while (Attendence.isOpen())
+                            {
+                                Event eaevent;
+                                while (Attendence.pollEvent(eaevent))
+                                {
+                                    if (eaevent.type == Event::Closed)
+                                    {
+                                        Attendence.close();
+                                    }
+                                    if (eaevent.type == Event::KeyPressed)
+                                    {
+                                        if (eaevent.key.code == Keyboard::Escape)
+                                        {
+                                            Attendence.close();
+                                        }
+                                    }
+                                }
+                                Enroll.close();
+                                Register.close();
+                                Marks.close();
+                                Withdraw.close();
+                                Exit.close();
+                                Attendence.clear();
+
+                                Attendence.display();
+                            }
+                        }
+                        if (x == 4)
+                        {
+                            while (Withdraw.isOpen())
+                            {
+                                Event eaevent;
+                                while (Withdraw.pollEvent(eaevent))
+                                {
+                                    if (eaevent.type == Event::Closed)
+                                    {
+                                        Withdraw.close();
+                                    }
+                                    if (eaevent.type == Event::KeyPressed)
+                                    {
+                                        if (eaevent.key.code == Keyboard::Escape)
+                                        {
+                                            Withdraw.close();
+                                        }
+                                    }
+                                }
+                                Enroll.close();
+                                Register.close();
+                                Marks.close();
+                                Attendence.close();
+                                Exit.close();
+                                Withdraw.clear();
+
+                                Withdraw.display();
+                            }
+                        }
+                        if (x == 5)
+                        {
+                            window.close();  // this will exit the screen 
+                            Enroll.close();
+                            Register.close();
+                            Marks.close();
+                            Attendence.close();
+                            Exit.close();
+                            Withdraw.close();
+                        }
+                    }
+                }
+            }
+            window.clear();
+            menu.draw(window);
+            window.display();
+        }
+    }
+
     // this function will edit student details on compile ti
     void edit_student_detail(string roll)
     {
@@ -1193,7 +1537,6 @@ public:
         }
 
     }
-
     // this function will add new students in a system 
     void add_student(student& obj)
     {
@@ -1211,32 +1554,6 @@ public:
             cout << "\nStudent detail not saved \n";
 
     }
-
-    // this function will display the detail of all student and save data in file_handling 
-
-    //void display_student_system()
-    //{
-    //    filehandling obj("student_All_Data.txt");   // store student data with courses 
-    //    cout << ":: Students ::\n";
-    //    for (int i = 0; i < 100; i++)
-    //    {
-    //        if (students[i].get_roll_number() != " ")
-    //        {
-    //            //students[i].display_student();
-    //            obj.write_student_courses(students[i]);   // save student data with courses 
-    //            cout << endl;
-    //        }
-    //    }
-    //}
-
-    /*void display_courses_system()
-    {
-        for (int i = 0; i < 20; i++)
-        {
-            courses[i].display_course();
-        }
-    }*/
-
     void load_student_data()
     {
         student_count_System = 0;
@@ -1390,106 +1707,14 @@ bool Authentication(string Student_ID)
     }
     return check;
 }
-class SFMLMenuScreen
+int main()
 {
-private:
-    int selectindex;
-    Font font;
-    Text text[6];  // as we have 5 menus 
-public:
-    SFMLMenuScreen(float w , float h)
-    {
-        if (!(font.loadFromFile("arial.ttf")))
-        {
-            cout << "Error loadinf file :\n";
-        }
-        text[0].setFont(font);
-        text[0].setFillColor(Color::Blue);
-        text[0].setString("1 - Display Enroll Students \n");
-        text[0].setPosition(Vector2f(w / 2, h / (6 + 1) * 1));
-
-        text[1].setFont(font);
-        text[1].setFillColor(Color::White);
-        text[1].setString("2 - Registration ");
-        text[1].setPosition(Vector2f(w / 2 , h / (6 + 1) * 2));
-
-        text[2].setFont(font);
-        text[2].setFillColor(Color::White);
-        text[2].setString("3 - Attendence ");
-        text[2].setPosition(Vector2f(w / 2, h / (6 + 1) * 3));
-
-        text[3].setFont(font);
-        text[3].setFillColor(Color::White);
-        text[3].setString("4 - Marks");
-        text[3].setPosition(Vector2f(w / 2, h / (6 + 1) * 4));
-
-        text[4].setFont(font);
-        text[4].setFillColor(Color::White);
-        text[4].setString("5 - Course Withdraw");
-        text[4].setPosition(Vector2f(w / 2, h / (6 + 1) * 5));
-
-        text[5].setFont(font);
-        text[5].setFillColor(Color::White);
-        text[5].setString("5 - Exit ");
-        text[5].setPosition(Vector2f(w / 2, h / (6 + 1) * 6));
-
-        selectindex = 0;
-    }
-    void draw(RenderWindow & window)
-    {
-        for (int i = 0; i < 6; i++)
-        {
-            window.draw(text[i]);
-        }
-    }
-    int mainmenupress()
-    {
-        return selectindex;
-    }
-    void moveUp()
-    {
-        /*if (selectindex - 1 >= 0)
-        {
-            text[selectindex].setFillColor(Color::White);
-            selectindex--;
-            if (selectindex == 0)
-            {
-                selectindex = 1;
-            }
-            text[selectindex].setFillColor(Color::Blue);
-        }*/
-        if (selectindex - 1 >= 0)
-        {
-            text[selectindex].setFillColor(Color::White);
-            selectindex--;
-            text[selectindex].setFillColor(Color::Blue);
-        }
-    }
-    void moveDown()
-    {
-        /*if (selectindex + 1 < 5)
-        {
-            text[selectindex].setFillColor(Color::White);
-            selectindex++;
-            if (selectindex == 6)
-            {
-                selectindex = 0;
-            }
-            text[selectindex].setFillColor(Color::Blue);
-        }*/
-        if (selectindex + 1 < 6)
-        {
-            text[selectindex].setFillColor(Color::White);
-            selectindex++;
-            text[selectindex].setFillColor(Color::Blue);
-        }
-    }
-};
-void menu_Function_SFML()
-{
-    RenderWindow window(VideoMode(900, 600), "FLEX managment System");
     bool checking_student = false;
+
+
     SFMLMenuScreen menu(window.getSize().x, window.getSize().y);
+
+
     Font font;
     font.loadFromFile("arial.ttf");
     if (!font.loadFromFile("arial.ttf"))
@@ -1506,36 +1731,41 @@ void menu_Function_SFML()
 
     // Create a rectangle shape
     RectangleShape rectangle;
-    rectangle.setSize(sf::Vector2f(500, 100)); // Set the size of the rectangle
+    rectangle.setSize( Vector2f(500, 100)); // Set the size of the rectangle
     rectangle.setPosition(200, 200);           // Set the position of the rectangle
-    rectangle.setFillColor(sf::Color::Transparent); // Set the fill color to transparent
-    rectangle.setOutlineColor(sf::Color::White);    // Set the outline color
+    rectangle.setFillColor( Color::Transparent); // Set the fill color to transparent
+    rectangle.setOutlineColor( Color::White);    // Set the outline color
     rectangle.setOutlineThickness(2.0f);             // Set the outline thickness
     string ID;
     // setting detail for user input 
     Text userInputText;
     userInputText.setFont(font);
     userInputText.setCharacterSize(24);
-    userInputText.setFillColor(sf::Color::White);
+    userInputText.setFillColor( Color::White);
     userInputText.setPosition(220, 220);
     Text text_show;
     Text text_show2;
-    while (window.isOpen())
+
+    bool shouldContinue = true;
+
+    
+    while (shouldContinue)
     {
         Event aevent;
         while (window.pollEvent(aevent))
         {
             if (aevent.type == Event::TextEntered)
             {
-                if (aevent.text.unicode < 128 && aevent.text.unicode > 31)
-                {
-                    ID += aevent.text.unicode;
-                    userInputText.setString(ID);
-                    window.draw(userInputText);
-                }
-                else if (aevent.text.unicode == 8 && !ID.empty()) // backspace
-                {
-                    ID.pop_back();
+                    if (aevent.text.unicode < 128 && aevent.text.unicode > 31)
+                    {
+                        ID += aevent.text.unicode;
+                        userInputText.setString(ID);
+                        window.draw(userInputText);
+                    }
+                    else if (aevent.text.unicode == 8 && !ID.empty()) // backspace
+                    {
+                        ID.pop_back();
+                    }
                 }
             }
             if (Keyboard::isKeyPressed(Keyboard::Enter))
@@ -1543,20 +1773,13 @@ void menu_Function_SFML()
                 checking_student = Authentication(ID);
                 if (checking_student)
                 {
-                    window.clear();
-                    text_show.setFont(font);
-                    text_show.setString("Welcome to FAST - NUCES Portal");
-                    text_show.setCharacterSize(24);
-                    text_show.setFillColor(Color::White);
-                    text_show.setPosition(250, 50);
-                    window.draw(text_show);
-                    // menu.draw(window); // Draw the menu
-                    window.display();
+                   // shouldContinue = false;
+                    window.clear();   
                     System obj;
                     obj.load_student_with_their_courses();
                     obj.load_all_ava_courses();
                     obj.displayMainMenu();
-                    obj.performMainMenuAction();
+                    obj.performMainMenuAction2();
                 }
                 else
                 {
@@ -1570,254 +1793,12 @@ void menu_Function_SFML()
                     window.display();
                 }
             }
-        }
         window.clear();
         window.draw(text);
         window.draw(userInputText);
         window.draw(rectangle);
         window.draw(text_show2);
         window.display();
-    }
-}
-int main()
-{
-    menu_Function_SFML();
-   
-    return 0;
-}
-       /* //if (checking_student)
-        //{
-        //    window.display();
-        //    while (window.pollEvent(aevent))
-        //    {
-        //        if (aevent.type == Event::Closed) {
-        //            window.close();
-        //        }
-        //        if (aevent.type == Event::KeyReleased)
-        //        {
-        //            if (aevent.key.code == Keyboard::Up)
-        //            {
-        //                menu.moveUp();
-        //                break;
-        //            }
-        //            if (aevent.key.code == Keyboard::Down)
-        //            {
-        //                menu.moveDown();
-        //                break;
-        //            }
-        //            if (aevent.key.code == Keyboard::Return)
-        //            {
-        //                RenderWindow Enroll(VideoMode(960, 720), "Enroll student");
-        //                RenderWindow Register(VideoMode(960, 720), "Register student");
-        //                RenderWindow Marks(VideoMode(960, 720), "Attedence");
-        //                RenderWindow Attendence(VideoMode(960, 720), "Marks");
-        //                RenderWindow Withdraw(VideoMode(960, 720), "Course Withdraw");
-        //                RenderWindow Exit(VideoMode(960, 720), "Exit");
-        //                int x = menu.mainmenupress();
-        //                if (x == 0)
-        //                {
-        //                    while (Enroll.isOpen())
-        //                    {
-        //                        Event eaevent;
-        //                        while (Enroll.pollEvent(eaevent))
-        //                        {
-        //                            if (eaevent.type == Event::Closed)
-        //                            {
-        //                                Enroll.close();
-        //                            }
-        //                            if (eaevent.type == Event::KeyPressed)
-        //                            {
-        //                                if (eaevent.key.code == Keyboard::Escape)
-        //                                {
-        //                                    Enroll.close();
-        //                                }
-        //                            }
-        //                        }
-        //                        Register.close();
-        //                        Marks.close();
-        //                        Attendence.close();
-        //                        Withdraw.close();
-        //                        Exit.close();
-        //                        Enroll.clear();
-        //                        Enroll.display();
-        //                    }
-        //                }
-        //                if (x == 1) {
-        //                    while (Register.isOpen()) {
-        //                        Event eaevent;
-
-        //                        while (Register.pollEvent(eaevent)) {
-        //                            if (eaevent.type == Event::Closed) {
-        //                                Register.close();
-        //                                break; // Break out of the inner loop
-        //                            }
-
-        //                            if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Escape) {
-        //                                Register.close();
-        //                            }
-        //                        }
-
-        //                        Enroll.close();
-        //                        Marks.close();
-        //                        Attendence.close();
-        //                        Withdraw.close();
-        //                        Exit.close();
-
-        //                        Register.clear();
-        //                        Register.display();
-        //                    }
-        //                }
-        //                if (x == 2)
-        //                {
-        //                    while (Marks.isOpen())
-        //                    {
-        //                        Event eaevent;
-        //                        while (Marks.pollEvent(eaevent))
-        //                        {
-        //                            if (eaevent.type == Event::Closed)
-        //                            {
-        //                                Marks.close();
-        //                            }
-        //                            if (eaevent.type == Event::KeyPressed)
-        //                            {
-        //                                if (eaevent.key.code == Keyboard::Escape)
-        //                                {
-        //                                    Marks.close();
-        //                                }
-        //                            }
-        //                        }
-        //                        Enroll.close();
-        //                        Register.close();
-        //                        Attendence.close();
-        //                        Withdraw.close();
-        //                        Exit.close();
-        //                        Marks.clear();
-
-        //                        Marks.display();
-        //                    }
-        //                }
-        //                if (x == 3)
-        //                {
-        //                    while (Attendence.isOpen())
-        //                    {
-        //                        Event eaevent;
-        //                        while (Attendence.pollEvent(eaevent))
-        //                        {
-        //                            if (eaevent.type == Event::Closed)
-        //                            {
-        //                                Attendence.close();
-        //                            }
-        //                            if (eaevent.type == Event::KeyPressed)
-        //                            {
-        //                                if (eaevent.key.code == Keyboard::Escape)
-        //                                {
-        //                                    Attendence.close();
-        //                                }
-        //                            }
-        //                        }
-        //                        Enroll.close();
-        //                        Register.close();
-        //                        Marks.close();
-        //                        Withdraw.close();
-        //                        Exit.close();
-        //                        Attendence.clear();
-
-        //                        Attendence.display();
-        //                    }
-        //                }
-        //                if (x == 4)
-        //                {
-        //                    while (Withdraw.isOpen())
-        //                    {
-        //                        Event eaevent;
-        //                        while (Withdraw.pollEvent(eaevent))
-        //                        {
-        //                            if (eaevent.type == Event::Closed)
-        //                            {
-        //                                Withdraw.close();
-        //                            }
-        //                            if (eaevent.type == Event::KeyPressed)
-        //                            {
-        //                                if (eaevent.key.code == Keyboard::Escape)
-        //                                {
-        //                                    Withdraw.close();
-        //                                }
-        //                            }
-        //                        }
-        //                        Enroll.close();
-        //                        Register.close();
-        //                        Marks.close();
-        //                        Attendence.close();
-        //                        Exit.close();
-        //                        Withdraw.clear();
-
-        //                        Withdraw.display();
-        //                    }
-        //                }
-        //                if (x == 5)
-        //                {
-        //                    window.close();  // this will exit the screen 
-        //                    Enroll.close();
-        //                    Register.close();
-        //                    Marks.close();
-        //                    Attendence.close();
-        //                    Exit.close();
-        //                    Withdraw.close();
-        //                }
-        //            }
-        //        }
-                //if (aevent.type == Event::TextEntered)
-                //{
-                //    if (aevent.text.unicode < 128 && aevent.text.unicode > 31)
-                //    {
-                //        ID += aevent.text.unicode;
-                //        userInputText.setString(ID);
-                //        window.draw(userInputText);
-                //    }
-                //    else if (aevent.text.unicode == 8 && !ID.empty()) // backspace
-                //    {
-                //        ID.pop_back();
-                //    }
-                //}
-                //if (Keyboard::isKeyPressed(Keyboard::Enter))
-                //{
-                //    checking_student = Authentication(ID);
-                //    if (checking_student)
-                //    {
-                //        window.clear();
-                //        text_show.setFont(font);
-                //        text_show.setString("Welcome to FAST - NUCES Portal");
-                //        text_show.setCharacterSize(24);
-                //        text_show.setFillColor(Color::White);
-                //        text_show.setPosition(250, 50);
-                //        window.draw(text_show);
-                //        menu.draw(window); // Draw the menu
-                //        window.display();
-                //        System obj;
-                //        obj.load_student_with_their_courses();
-                //        obj.load_all_ava_courses();
-                //        obj.displayMainMenu();
-                //        obj.performMainMenuAction();
-                //    }
-                //    else
-                //    {
-                //        window.clear();
-                //        text_show2.setFont(font);
-                //        text_show2.setString("You are not a student of FAST - Try Again..");
-                //        text_show2.setCharacterSize(24);
-                //        text_show2.setFillColor(Color::White);
-                //        text_show2.setPosition(400, 400);
-                //        window.draw(text_show2);
-                //        window.display();
-                //    }
-                //}
-            }
-            
         }
-
-        //window.clear();
-        //menu.draw(window);
-        //window.display();
-    }
     return 0;
-}*/
+    }
