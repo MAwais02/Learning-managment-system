@@ -220,14 +220,11 @@ public:
 
         }
     }
-    void display_enroll_students()
+    void display_enroll_students(RenderWindow &window_Enroll , Text text)
     {
-        cout << "Name is " << name << "  ";
-        cout << "Roll no is " << roll_num << " ";
-        cout << "Age  is " << age << " ";
-        cout << "COntact is " << contact << " ";
-
-        cout << endl;
+        string s = to_string(age);    // first convert int into string data type 
+        text.setString("Name :" + name + "Roll no : " + roll_num + "Contact " + contact + "Age : " + s);
+        window_Enroll.draw(text);
     }
     void set_name(string n)
     {
@@ -810,443 +807,548 @@ public:
         window.display();
     }
 
-    void displayStudentSubMenu()
+    void displayStudentSubMenu(RenderWindow &Subwindow)
     {
-        cout << "1 - display already enrolled students" << endl;
-        cout << "2 - Add a student" << endl;
-        cout << "3 - remove a student" << endl;
-        cout << "4 - Edit student detail" << endl;
-        cout << "5 - back" << endl;
-    }
-    void displayCourseSubMenu()
-    {
-        cout << "1 - Available Courses" << endl;
-        cout << "2 - Add new courses " << endl;
-        cout << "3 - Register course" << endl;
-        cout << "4 - back" << endl;
-    }
-    void displayattendencesubmenu()
-    {
-        cout << "1 - Display Attendance(Subject wise)" << endl;
-        cout << "2 - Mark Attendance." << endl;
-        cout << "3 - back" << endl;
-    }
-    void markssubmeenu()
-    {
-        cout << "1 - Display Marks(Subject wise)" << endl;
-        cout << "2 - Assign Marks." << endl;
-        cout << "3 - back" << endl;
-    }
-    void display_withdraw_submenu()
-    {
-        cout << "1 - Enrolled courses" << endl;
-        cout << "2 - Drop a course" << endl;
-        cout << "3 - back" << endl;
-    }
+        Text menuItems[5];
 
-
-    void performMainMenuAction()
-    {
-        displayMainMenu2();
-        int choice;
-        while (cout << "Enter any chocie from above main\n" && cin >> choice && choice != 6)
+        Font font;
+        font.loadFromFile("arial.ttf");
+        for (int i = 0; i < 5; ++i)
         {
-            while (choice < 1 || choice > 6)
-            {
-                cout << "Invalid input try again :\n";
-                cin >> choice;
-            }
-            cout << "You select option number :" << choice << endl;
-            // this will check what user has choice
-             // enroll a student menu 
-            if (choice == 1)
-            {
-                int choice2;           // for sub student menu 
-                cout << "\n-------Choose from given below sub menu-------\n";
-                displayStudentSubMenu();
-                cin >> choice2;                  // sub menu choose kry gha ye 
-
-                if (choice2 == 1)   // display already enrooll student 
-                {
-                    for (int i = 0; i < student_count_System; i++)
-                    {
-                        students[i].display_enroll_students();             // display enroll students   
-                    }
-
-                    /*filehandling open_file;
-                    cout << "-------------FOllowing are the existing students--------------\n";
-                    open_file.open("studentdata.txt");*/
-                }
-                else if (choice2 == 2)  // add student 
-                {
-                    if (student_count_System < 100)
-                    {
-                        string n, c, r;
-                        int a;
-                        bool check = false;
-
-                        cout << "Enter name of student : ";
-                        cin.ignore();
-                        cin >> n;
-
-                        do
-                        {
-
-                            cout << "Enter contact number of student :";
-                            cin.ignore();
-                            cin >> c;
-                            validaltion obj;
-                            bool x = obj.valid_contact(c);
-                            check = x;
-                        } while (!check && cout << "Invalid combination - Enter again ");
-                        check = false;
-                        do
-                        {
-                            cout << "Enter roll number of student :";
-                            cin.ignore();
-                            cin >> r;
-                            validaltion obj;
-                            bool x = obj.is_valid_roll_number(r);
-                            check = x;
-                        } while (!check && cout << "Re-enter combination is not valid");
-                        check = false;
-                        do
-                        {
-
-                            cout << "Enter age of student : ";
-                            cin >> a;
-                            validaltion obj;
-                            bool x = obj.valid_age(a);
-
-                        } while (!check && cout << "invalid age enter agian");
-
-                        student obj;
-                        obj.enroll_student(n, r, a, c);
-                        add_student(obj);  // add students using fucntion
-                    }
-                    else
-                        cout << "\n\nStudent Limit reached Try next year !...\n\n";
-                }
-                else if (choice2 == 3)  // remove student 
-                {
-                    string r;
-                    cout << "Enter roll number to remove :";
-                    cin >> r;
-                    remove_student(r);
-                }
-                else if (choice2 == 4)  // edit student detail 
-                {
-                    string roll;
-                    cout << "Enter roll number : ";
-                    cin >> roll;
-                    edit_student_detail(roll);
-                }
-            }
-            // Regitser courses 
-            else if (choice == 2)           // course registration 
-            {
-                displayCourseSubMenu();    // display sub menu 
-                int choice2;
-                cout << "ENter sub menu choice : ";
-                cin >> choice2;
-
-
-                if (choice2 == 1)      // display courses 
-                {
-
-                    for (int i = 0; i < course_count_system; i++)
-                    {
-                        courses[i].display_course();
-                    }
-                }
-                else if (choice2 == 2)   // add new course 
-                {
-                    add_new_courses();
-                }
-                else if (choice2 == 3)       // register courses 
-                {
-                    string roll_to_check;
-                    int student_index = 0;
-                    bool check_avalibilty = false;
-                    cout << "Enter roll number of student to register course :";
-                    cin.ignore();
-                    getline(cin, roll_to_check);
-                    for (int i = 0; i < student_count_System; i++)
-                    {
-                        if (roll_to_check == students[i].get_roll_number())
-                        {
-                            check_avalibilty = true;
-                            student_index = i;
-                            break;
-                        }
-                    }
-                    if (check_avalibilty)
-                    {
-                        char choice_To_add;
-                        do
-                        {
-                            string c;  // code of course to register
-                            cout << "\nEnter code number of course to register\n";
-                            cin >> c;
-
-                            bool check_course_avalibility = false;
-                            for (int i = 0; i < course_count_system; i++)
-                            {
-                                if (courses[i].get_code() == c)
-                                {
-
-                                    // cout << "Course index :" << students[student_index].get_course_count_student() << endl;
-                                    if (students[student_index].get_course_count_student() > 4)
-                                    {
-                                        cout << "MAx course capacity reached \n";
-                                    }
-                                    else
-                                    {
-                                        students[student_index].add_course_student(courses[i].get_name());
-                                        check_course_avalibility = true;
-
-                                        break;
-                                    }
-                                }
-                            }
-                            if (check_course_avalibility)
-                            {
-                                cout << "\nCongratulation ! Registred successfully\n";
-                            }
-                            else
-                            {
-                                cout << " Sorry! No course with that course code exist Try again...";
-                            }
-                            cout << "Do U want to add more course into that student (Y/Yes | N/NO): ";
-                            cin >> choice_To_add;
-                        } while (choice_To_add != 'N' && choice_To_add != 'n');
-                    }
-                    else
-                        cout << "No student with that roll number exist Sorry !";
-
-                    // write all data into file first delete data then write new data 
-                    {
-                        ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
-
-                        filehandling obj("student_all_data.txt");
-                        for (int i = 0; i < student_count_System; i++)
-                        {
-                            obj.write_student_courses(students[i]);   // write student data with courses 
-                        }
-                    }
-                }
-            }
-            // attendence 
-            else if (choice == 3)
-            {
-                int choice2;
-                displayattendencesubmenu();  // display sub attendence menu 
-                cout << "Choose anything from below : ";
-                cin >> choice2;
-                if (choice2 == 1)
-                {
-                    /*for (int i = 0; i < student_count_System; i++)
-                    {
-                        students[i].display_student();
-                    }*/
-                    filehandling obj;
-                    obj.open_file("student_attendence.txt");  // display already attendence of student 
-                }
-                else if (choice2 == 2)
-                {
-                    int index_ofSTu;
-                    string roll_num;
-                    cout << "\nENter the roll number of student to mark attendence : ";
-                    cin >> roll_num;
-
-                    bool check_STudent = false;
-                    for (int i = 0; i < student_count_System; i++)
-                    {
-                        if (roll_num == students[i].get_roll_number())
-                        {
-                            check_STudent = true;
-                            index_ofSTu = i;
-                            //string codeofcourse;
-                            //cout << "\nStudent FOund !\n";
-                            //cout << "\nEnter Name of course to mark attendece : ";
-                            //cin >> codeofcourse;
-                            //for (int j = 0; j < 5; j++) // max courses
-                            //{
-                            //    if (students[i].get_course_student(j) == codeofcourse)
-                            //    {
-                            //        char ch;
-                            //        cout << "\nEnter attendecce of student (P / A / L)  :";
-                            //        cin >> ch;
-                            //        students[i].mark_attendence(codeofcourse, ch);  // mark attendence for that course 
-                            //        break;
-                            //    }
-                            //}
-                        }
-                    }
-                    if (check_STudent)
-                    {
-                        int x = students[index_ofSTu].get_course_count_student();
-                        if (x > 0)
-                        {
-                            for (int i = 0; i < x; i++)
-                            {
-                                char AttenDencE;
-                                cout << "Enter Attendence for " << students[index_ofSTu].get_course_student(i) << " :";
-                                cin >> AttenDencE;
-                                students[index_ofSTu].mark_attendence(AttenDencE);
-                            }
-                            filehandling obj("student_attendence.txt");
-                            obj.write_attendence(students[index_ofSTu], x);
-                        }
-                        else
-                            cout << "\n Student has no courses \n";
-                    }
-                    if (!check_STudent)
-                    {
-                        cout << "\nNO student with that roll number exist \n";
-                    }
-                    else
-                        cout << "\nStudent found and attendence marked \n";
-                }
-            }
-            // Marks of students 
-            else if (choice == 4)
-            {
-                bool check_stU = false;
-                int choice2;
-                markssubmeenu();   // sub menu of marks 
-                cout << "CHoose anything from main menu : ";
-                cin >> choice2;
-
-                if (choice2 == 1)  // display already marks of students 
-                {
-                    filehandling obj;
-                    obj.open_file("students_marks.txt");
-
-                    /*for (int i = 0; i < student_count_System; i++)
-                    {
-                        students[i].display_student();
-                    }*/
-                }
-                else if (choice2 == 2)
-                {
-                    string roll;
-                    int index_ofSTu;
-                    cout << "\nEnter roll number of student :";
-                    cin >> roll;
-                    for (int i = 0; i < student_count_System; i++)
-                    {
-                        if (roll == students[i].get_roll_number())
-                        {
-                            check_stU = true;
-                            index_ofSTu = i;
-                            cout << "\nStudent Found\n";
-                            break;
-                        }
-                    }
-                    if (check_stU)
-                    {
-                        int x = students[index_ofSTu].get_course_count_student();
-
-                        if (x > 0)  // student atleast has one course 
-                        {
-                            for (int i = 0; i < x; i++)
-                            {
-                                int marks;
-                                cout << "Enter marks for " << students[index_ofSTu].get_course_student(i);
-                                cin >> marks;
-                                students[index_ofSTu].marks_assingn(marks);   // assign marks to courses 
-                            }
-                            cout << "\n----MArks assigned Succesfully-----\n";
-
-                            filehandling obj("students_marks.txt");
-                            obj.write_marks(students[index_ofSTu], x);
-
-                        }
-                        else
-                        {
-                            cout << "\nStudent has no courses\n";
-                        }
-                        //string sub_name;
-                        //cout << "\nEnter subject name to Enter marks :";
-                        //cin >> sub_name;
-                        //for (int i = 0; i < 5; i++)
-                        //{
-                        //    if (students[index_ofSTu].get_course_student(i) == sub_name) // checkk course 
-                        //    {
-                        //        int marks;
-                        //        cout << "Enter marks for " << sub_name << " Course :";
-                        //        cin >> marks;
-                        //        students[index_ofSTu].marks_assingn(sub_name, marks);   // assign marks to courses 
-                        //        cout << "-------------Marks assingned------------\n";
-                        //        // this will store marks into files 
-                        //       /* filehandling obj("studentmarks.txt");
-                        //        for (int i = 0; i < student_count_System; i++)
-                        //        {
-                        //            obj.write_marks(students[i]);
-                        //        }*/
-                    }
-                }
-            }
-            // withdraw course of student 
-            else if (choice == 5)
-            {
-                int choice2;
-                display_withdraw_submenu();
-                cout << "Enter any choice from above menu : ";
-                cin >> choice2;
-
-                if (choice2 == 1)   // display student courses 
-                {
-                    string roll__;
-                    cout << "ENter roll number of student to check enrolled courses :";
-                    cin >> roll__;
-                    for (int i = 0; i < student_count_System; i++)
-                    {
-                        if (students[i].get_roll_number() == roll__)
-                        {
-                            students[i].display_student();
-                            break;
-                        }
-                    }
-                }
-                else if (choice2 == 2)  // drop a course 
-                {
-                    int S_index = 0;
-                    string RoLl;
-                    cout << "Enter your roll_number : ";
-                    cin >> RoLl;
-                    for (int i = 0; i < student_count_System; i++)
-                    {
-                        if (students[i].get_roll_number() == RoLl)
-                        {
-                            S_index = i;
-                            string name_Of_coUrse;
-                            cout << "WHich course you want to withdraw Enter course Name : ";
-                            cin >> name_Of_coUrse;
-                            for (int j = 0; j < 5; j++)  //max 5 courses 
-                            {
-                                if (students[S_index].get_course_student(j) == name_Of_coUrse)
-                                {
-                                    students[S_index].withdraw_courses(name_Of_coUrse);
-                                    ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
-
-                                    filehandling obj("student_all_data.txt");
-                                    for (int i = 0; i < student_count_System; i++)
-                                    {
-                                        obj.write_student_courses(students[i]);   // write student data with courses 
-                                    }
-                                    cout << "\n----------Withdraw successfully---------------\n";
-                                    break;
-                                }
-
-                            }
-                        }
-                    }
-
-                }
-            }
+            menuItems[i].setFont(font);
+            menuItems[i].setCharacterSize(24);
+            menuItems[i].setFillColor(Color::White);
         }
+        menuItems[0].setString("1 - Display Enroll Student ");
+        menuItems[1].setString("2 - Add student");
+        menuItems[2].setString("3 - Edit student Detail");
+        menuItems[3].setString("4 - Remeove Student");
+        menuItems[4].setString("5 - Edit");
+
+        Vector2f position = { 100, 100 };
+        for (int i = 0; i < 5; ++i)
+        {
+            menuItems[i].setPosition(position);
+            position.y += menuItems[i].getLocalBounds().height + 40;
+        }
+        for (const Text& text : menuItems)
+        {
+            Subwindow.draw(text);
+        }
+        //Subwindow.display();
+    }
+    void displayCourseSubMenu(RenderWindow & Subwindow)
+    {
+        Text menuItems[4];
+
+        Font font;
+        font.loadFromFile("arial.ttf");
+        for (int i = 0; i < 4; ++i)
+        {
+            menuItems[i].setFont(font);
+            menuItems[i].setCharacterSize(24);
+            menuItems[i].setFillColor(Color::White);
+        }
+        menuItems[0].setString("1 - Avalible Course ");
+        menuItems[1].setString("2 - Add Course ");
+        menuItems[2].setString("3 - Register Course ");
+        menuItems[3].setString("4 - Back ");
+
+        Vector2f position = { 100, 100 };
+        for (int i = 0; i < 4; ++i)
+        {
+            menuItems[i].setPosition(position);
+            position.y += menuItems[i].getLocalBounds().height + 40;
+        }
+        for (const Text& text : menuItems)
+        {
+            Subwindow.draw(text);
+        }
+    }
+    void displayattendencesubmenu(RenderWindow & Subwindow)
+    {
+        Text menuItems[3];
+
+        Font font;
+        font.loadFromFile("arial.ttf");
+        for (int i = 0; i < 3; ++i)
+        {
+            menuItems[i].setFont(font);
+            menuItems[i].setCharacterSize(24);
+            menuItems[i].setFillColor(Color::White);
+        }
+        menuItems[0].setString("1 - Display Attendence ");
+        menuItems[1].setString("2 - Mark Attendence");
+        menuItems[2].setString("3 - Back ");
+
+        Vector2f position = { 100, 100 };
+        for (int i = 0; i < 3; ++i)
+        {
+            menuItems[i].setPosition(position);
+            position.y += menuItems[i].getLocalBounds().height + 40;
+        }
+        for (const Text& text : menuItems)
+        {
+            Subwindow.draw(text);
+        }
+    }
+    void displaymarkssubmeenu(RenderWindow & Subwindow)
+    {
+        Text menuItems[3];
+
+        Font font;
+        font.loadFromFile("arial.ttf");
+        for (int i = 0; i < 3; ++i)
+        {
+            menuItems[i].setFont(font);
+            menuItems[i].setCharacterSize(24);
+            menuItems[i].setFillColor(Color::White);
+        }
+        menuItems[0].setString("1 - Display Marks ");
+        menuItems[1].setString("2 - Assign Marks ");
+        menuItems[2].setString("3 - Back ");
+
+        Vector2f position = { 100, 100 };
+        for (int i = 0; i < 3; ++i)
+        {
+            menuItems[i].setPosition(position);
+            position.y += menuItems[i].getLocalBounds().height + 40;
+        }
+        for (const Text& text : menuItems)
+        {
+            Subwindow.draw(text);
+        }
+    }
+    void display_withdraw_submenu(RenderWindow & Subwindow)
+    {
+        Text menuItems[3];
+
+        Font font;
+        font.loadFromFile("arial.ttf");
+        for (int i = 0; i < 3; ++i)
+        {
+            menuItems[i].setFont(font);
+            menuItems[i].setCharacterSize(24);
+            menuItems[i].setFillColor(Color::White);
+        }
+        menuItems[0].setString("1 - Display Enroll Courses ");
+        menuItems[1].setString("2 - Drop a Course ");
+        menuItems[2].setString("3 - Back ");
+
+        Vector2f position = { 100, 100 };
+        for (int i = 0; i < 3; ++i)
+        {
+            menuItems[i].setPosition(position);
+            position.y += menuItems[i].getLocalBounds().height + 40;
+        }
+        for (const Text& text : menuItems)
+        {
+            Subwindow.draw(text);
+        }
+    }
+
+   void performMainMenuAction()
+    {
+        //displayMainMenu2();
+        //int choice;
+        //while (cout << "Enter any chocie from above main\n" && cin >> choice && choice != 6)
+        //{
+        //    while (choice < 1 || choice > 6)
+        //    {
+        //        cout << "Invalid input try again :\n";
+        //        cin >> choice;
+        //    }
+        //    cout << "You select option number :" << choice << endl;
+        //    // this will check what user has choice
+        //     // enroll a student menu 
+        //    if (choice == 1)
+        //    {
+        //        int choice2;           // for sub student menu 
+        //        cout << "\n-------Choose from given below sub menu-------\n";
+        //        displayStudentSubMenu();
+        //        cin >> choice2;                  // sub menu choose kry gha ye 
+
+        //        if (choice2 == 1)   // display already enrooll student 
+        //        {
+        //            for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                students[i].display_enroll_students();             // display enroll students   
+        //            }
+
+        //            /*filehandling open_file;
+        //            cout << "-------------FOllowing are the existing students--------------\n";
+        //            open_file.open("studentdata.txt");*/
+        //        }
+        //        else if (choice2 == 2)  // add student 
+        //        {
+        //            if (student_count_System < 100)
+        //            {
+        //                string n, c, r;
+        //                int a;
+        //                bool check = false;
+
+        //                cout << "Enter name of student : ";
+        //                cin.ignore();
+        //                cin >> n;
+
+        //                do
+        //                {
+
+        //                    cout << "Enter contact number of student :";
+        //                    cin.ignore();
+        //                    cin >> c;
+        //                    validaltion obj;
+        //                    bool x = obj.valid_contact(c);
+        //                    check = x;
+        //                } while (!check && cout << "Invalid combination - Enter again ");
+        //                check = false;
+        //                do
+        //                {
+        //                    cout << "Enter roll number of student :";
+        //                    cin.ignore();
+        //                    cin >> r;
+        //                    validaltion obj;
+        //                    bool x = obj.is_valid_roll_number(r);
+        //                    check = x;
+        //                } while (!check && cout << "Re-enter combination is not valid");
+        //                check = false;
+        //                do
+        //                {
+
+        //                    cout << "Enter age of student : ";
+        //                    cin >> a;
+        //                    validaltion obj;
+        //                    bool x = obj.valid_age(a);
+
+        //                } while (!check && cout << "invalid age enter agian");
+
+        //                student obj;
+        //                obj.enroll_student(n, r, a, c);
+        //                add_student(obj);  // add students using fucntion
+        //            }
+        //            else
+        //                cout << "\n\nStudent Limit reached Try next year !...\n\n";
+        //        }
+        //        else if (choice2 == 3)  // remove student 
+        //        {
+        //            string r;
+        //            cout << "Enter roll number to remove :";
+        //            cin >> r;
+        //            remove_student(r);
+        //        }
+        //        else if (choice2 == 4)  // edit student detail 
+        //        {
+        //            string roll;
+        //            cout << "Enter roll number : ";
+        //            cin >> roll;
+        //            edit_student_detail(roll);
+        //        }
+        //    }
+        //    // Regitser courses 
+        //    else if (choice == 2)           // course registration 
+        //    {
+        //        displayCourseSubMenu();    // display sub menu 
+        //        int choice2;
+        //        cout << "ENter sub menu choice : ";
+        //        cin >> choice2;
+
+
+        //        if (choice2 == 1)      // display courses 
+        //        {
+
+        //            for (int i = 0; i < course_count_system; i++)
+        //            {
+        //                courses[i].display_course();
+        //            }
+        //        }
+        //        else if (choice2 == 2)   // add new course 
+        //        {
+        //            add_new_courses();
+        //        }
+        //        else if (choice2 == 3)       // register courses 
+        //        {
+        //            string roll_to_check;
+        //            int student_index = 0;
+        //            bool check_avalibilty = false;
+        //            cout << "Enter roll number of student to register course :";
+        //            cin.ignore();
+        //            getline(cin, roll_to_check);
+        //            for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                if (roll_to_check == students[i].get_roll_number())
+        //                {
+        //                    check_avalibilty = true;
+        //                    student_index = i;
+        //                    break;
+        //                }
+        //            }
+        //            if (check_avalibilty)
+        //            {
+        //                char choice_To_add;
+        //                do
+        //                {
+        //                    string c;  // code of course to register
+        //                    cout << "\nEnter code number of course to register\n";
+        //                    cin >> c;
+
+        //                    bool check_course_avalibility = false;
+        //                    for (int i = 0; i < course_count_system; i++)
+        //                    {
+        //                        if (courses[i].get_code() == c)
+        //                        {
+
+        //                            // cout << "Course index :" << students[student_index].get_course_count_student() << endl;
+        //                            if (students[student_index].get_course_count_student() > 4)
+        //                            {
+        //                                cout << "MAx course capacity reached \n";
+        //                            }
+        //                            else
+        //                            {
+        //                                students[student_index].add_course_student(courses[i].get_name());
+        //                                check_course_avalibility = true;
+
+        //                                break;
+        //                            }
+        //                        }
+        //                    }
+        //                    if (check_course_avalibility)
+        //                    {
+        //                        cout << "\nCongratulation ! Registred successfully\n";
+        //                    }
+        //                    else
+        //                    {
+        //                        cout << " Sorry! No course with that course code exist Try again...";
+        //                    }
+        //                    cout << "Do U want to add more course into that student (Y/Yes | N/NO): ";
+        //                    cin >> choice_To_add;
+        //                } while (choice_To_add != 'N' && choice_To_add != 'n');
+        //            }
+        //            else
+        //                cout << "No student with that roll number exist Sorry !";
+
+        //            // write all data into file first delete data then write new data 
+        //            {
+        //                ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
+
+        //                filehandling obj("student_all_data.txt");
+        //                for (int i = 0; i < student_count_System; i++)
+        //                {
+        //                    obj.write_student_courses(students[i]);   // write student data with courses 
+        //                }
+        //            }
+        //        }
+        //    }
+        //    // attendence 
+        //    else if (choice == 3)
+        //    {
+        //        int choice2;
+        //        displayattendencesubmenu();  // display sub attendence menu 
+        //        cout << "Choose anything from below : ";
+        //        cin >> choice2;
+        //        if (choice2 == 1)
+        //        {
+        //            /*for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                students[i].display_student();
+        //            }*/
+        //            filehandling obj;
+        //            obj.open_file("student_attendence.txt");  // display already attendence of student 
+        //        }
+        //        else if (choice2 == 2)
+        //        {
+        //            int index_ofSTu;
+        //            string roll_num;
+        //            cout << "\nENter the roll number of student to mark attendence : ";
+        //            cin >> roll_num;
+
+        //            bool check_STudent = false;
+        //            for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                if (roll_num == students[i].get_roll_number())
+        //                {
+        //                    check_STudent = true;
+        //                    index_ofSTu = i;
+        //                    //string codeofcourse;
+        //                    //cout << "\nStudent FOund !\n";
+        //                    //cout << "\nEnter Name of course to mark attendece : ";
+        //                    //cin >> codeofcourse;
+        //                    //for (int j = 0; j < 5; j++) // max courses
+        //                    //{
+        //                    //    if (students[i].get_course_student(j) == codeofcourse)
+        //                    //    {
+        //                    //        char ch;
+        //                    //        cout << "\nEnter attendecce of student (P / A / L)  :";
+        //                    //        cin >> ch;
+        //                    //        students[i].mark_attendence(codeofcourse, ch);  // mark attendence for that course 
+        //                    //        break;
+        //                    //    }
+        //                    //}
+        //                }
+        //            }
+        //            if (check_STudent)
+        //            {
+        //                int x = students[index_ofSTu].get_course_count_student();
+        //                if (x > 0)
+        //                {
+        //                    for (int i = 0; i < x; i++)
+        //                    {
+        //                        char AttenDencE;
+        //                        cout << "Enter Attendence for " << students[index_ofSTu].get_course_student(i) << " :";
+        //                        cin >> AttenDencE;
+        //                        students[index_ofSTu].mark_attendence(AttenDencE);
+        //                    }
+        //                    filehandling obj("student_attendence.txt");
+        //                    obj.write_attendence(students[index_ofSTu], x);
+        //                }
+        //                else
+        //                    cout << "\n Student has no courses \n";
+        //            }
+        //            if (!check_STudent)
+        //            {
+        //                cout << "\nNO student with that roll number exist \n";
+        //            }
+        //            else
+        //                cout << "\nStudent found and attendence marked \n";
+        //        }
+        //    }
+        //    // Marks of students 
+        //    else if (choice == 4)
+        //    {
+        //        bool check_stU = false;
+        //        int choice2;
+        //        markssubmeenu();   // sub menu of marks 
+        //        cout << "CHoose anything from main menu : ";
+        //        cin >> choice2;
+
+        //        if (choice2 == 1)  // display already marks of students 
+        //        {
+        //            filehandling obj;
+        //            obj.open_file("students_marks.txt");
+
+        //            /*for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                students[i].display_student();
+        //            }*/
+        //        }
+        //        else if (choice2 == 2)
+        //        {
+        //            string roll;
+        //            int index_ofSTu;
+        //            cout << "\nEnter roll number of student :";
+        //            cin >> roll;
+        //            for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                if (roll == students[i].get_roll_number())
+        //                {
+        //                    check_stU = true;
+        //                    index_ofSTu = i;
+        //                    cout << "\nStudent Found\n";
+        //                    break;
+        //                }
+        //            }
+        //            if (check_stU)
+        //            {
+        //                int x = students[index_ofSTu].get_course_count_student();
+
+        //                if (x > 0)  // student atleast has one course 
+        //                {
+        //                    for (int i = 0; i < x; i++)
+        //                    {
+        //                        int marks;
+        //                        cout << "Enter marks for " << students[index_ofSTu].get_course_student(i);
+        //                        cin >> marks;
+        //                        students[index_ofSTu].marks_assingn(marks);   // assign marks to courses 
+        //                    }
+        //                    cout << "\n----MArks assigned Succesfully-----\n";
+
+        //                    filehandling obj("students_marks.txt");
+        //                    obj.write_marks(students[index_ofSTu], x);
+
+        //                }
+        //                else
+        //                {
+        //                    cout << "\nStudent has no courses\n";
+        //                }
+        //                //string sub_name;
+        //                //cout << "\nEnter subject name to Enter marks :";
+        //                //cin >> sub_name;
+        //                //for (int i = 0; i < 5; i++)
+        //                //{
+        //                //    if (students[index_ofSTu].get_course_student(i) == sub_name) // checkk course 
+        //                //    {
+        //                //        int marks;
+        //                //        cout << "Enter marks for " << sub_name << " Course :";
+        //                //        cin >> marks;
+        //                //        students[index_ofSTu].marks_assingn(sub_name, marks);   // assign marks to courses 
+        //                //        cout << "-------------Marks assingned------------\n";
+        //                //        // this will store marks into files 
+        //                //       /* filehandling obj("studentmarks.txt");
+        //                //        for (int i = 0; i < student_count_System; i++)
+        //                //        {
+        //                //            obj.write_marks(students[i]);
+        //                //        }*/
+        //            }
+        //        }
+        //    }
+        //    // withdraw course of student 
+        //    else if (choice == 5)
+        //    {
+        //        int choice2;
+        //        display_withdraw_submenu();
+        //        cout << "Enter any choice from above menu : ";
+        //        cin >> choice2;
+
+        //        if (choice2 == 1)   // display student courses 
+        //        {
+        //            string roll__;
+        //            cout << "ENter roll number of student to check enrolled courses :";
+        //            cin >> roll__;
+        //            for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                if (students[i].get_roll_number() == roll__)
+        //                {
+        //                    students[i].display_student();
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        else if (choice2 == 2)  // drop a course 
+        //        {
+        //            int S_index = 0;
+        //            string RoLl;
+        //            cout << "Enter your roll_number : ";
+        //            cin >> RoLl;
+        //            for (int i = 0; i < student_count_System; i++)
+        //            {
+        //                if (students[i].get_roll_number() == RoLl)
+        //                {
+        //                    S_index = i;
+        //                    string name_Of_coUrse;
+        //                    cout << "WHich course you want to withdraw Enter course Name : ";
+        //                    cin >> name_Of_coUrse;
+        //                    for (int j = 0; j < 5; j++)  //max 5 courses 
+        //                    {
+        //                        if (students[S_index].get_course_student(j) == name_Of_coUrse)
+        //                        {
+        //                            students[S_index].withdraw_courses(name_Of_coUrse);
+        //                            ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
+
+        //                            filehandling obj("student_all_data.txt");
+        //                            for (int i = 0; i < student_count_System; i++)
+        //                            {
+        //                                obj.write_student_courses(students[i]);   // write student data with courses 
+        //                            }
+        //                            cout << "\n----------Withdraw successfully---------------\n";
+        //                            break;
+        //                        }
+
+        //                    }
+        //                }
+        //            }
+
+        //        }
+        //    }
+        //}
     }
 
     void performMainMenuAction2()
@@ -1280,7 +1382,7 @@ public:
                         RenderWindow Attendence(VideoMode(960, 720), "Marks");
                         RenderWindow Withdraw(VideoMode(960, 720), "Course Withdraw");
                         RenderWindow Exit(VideoMode(960, 720), "Exit");
-                         
+                        
                         int x = menu.mainmenupress();
                         if (x == 0)
                         {
@@ -1295,21 +1397,233 @@ public:
                                     }
                                     if (eaevent.type == Event::KeyPressed)
                                     {
-                                        if (eaevent.key.code == Keyboard::Escape)
+                                        if (eaevent.key.code == Keyboard::Num5)
                                         {
                                             Enroll.close();
                                         }
+                                        if (eaevent.key.code == Keyboard::Num1)
+                                        {
+                                            RenderWindow showEnrollStudent(VideoMode(900, 600), "1 - Enroll Student Window");
+                                            Font fontt;
+                                            fontt.loadFromFile("arial.ttf");
+                                            Text Show_Text;
+                                            Show_Text.setFont(fontt);
+                                            Show_Text.setFillColor(Color::White);
+
+                                            int check = true;
+
+                                            while (showEnrollStudent.isOpen())
+                                            {
+                                                Event showEnrollStudentEvent;
+
+                                                while (showEnrollStudent.pollEvent(showEnrollStudentEvent))
+                                                {
+                                                    if (showEnrollStudentEvent.key.code == Keyboard::Escape)
+                                                    {
+                                                        showEnrollStudent.close();
+                                                    }
+                                                    if (showEnrollStudentEvent.type == Event::Closed)
+                                                    {
+                                                        showEnrollStudent.close();
+                                                    }
+                                                }
+
+                                                showEnrollStudent.clear(Color::Black); // Clear the window before drawing
+
+                                                for (int i = 0; i < student_count_System; i++)
+                                                {
+                                                    Show_Text.setPosition(0, 0 + 32 * i);
+                                                    students[i].display_enroll_students(showEnrollStudent, Show_Text);
+                                                    showEnrollStudent.draw(Show_Text);
+                                                }
+
+                                                showEnrollStudent.display(); // display detail of student
+                                            }
+                                        }
+
+                                        // ADD student into this 
+                                        bool Save_Check = false;
+                                        if ((eaevent.key.code == Keyboard::Num2))
+                                        {
+
+                                            RenderWindow Add_Student(VideoMode(900, 600), "Add Student");
+                                            string name, rollnumber, contact;
+                                            string  age;
+                                            Font font;
+                                            font.loadFromFile("arial.ttf");
+
+                                            Text text_Addstudent[4];
+
+                                            Text userInputTextname;
+                                            userInputTextname.setFillColor(Color::White);
+                                            userInputTextname.setFont(font);
+                                            userInputTextname.setCharacterSize(28);
+                                            userInputTextname.setPosition(0, 32 * 0 + 100);
+
+                                            Text userInputTextrollno;
+                                            userInputTextrollno.setFillColor(Color::White);
+                                            userInputTextrollno.setFont(font);
+                                            userInputTextrollno.setCharacterSize(28);
+                                            userInputTextrollno.setPosition(0, 32 * 1 + 100);
+
+                                            Text userInputTextcont;
+                                            userInputTextcont.setFillColor(Color::White);
+                                            userInputTextcont.setFont(font);
+                                            userInputTextcont.setCharacterSize(28);
+                                            userInputTextcont.setPosition(0, 32 * 2 + 100);
+
+                                            Text userInputTextage;
+                                            userInputTextage.setFillColor(Color::White);
+                                            userInputTextage.setFont(font);
+                                            userInputTextage.setCharacterSize(28);
+                                            userInputTextage.setPosition(0, 32 * 2 + 100);
+                                            for (int i = 0; i < 4; i++)
+                                            {
+                                                text_Addstudent[i].setCharacterSize(28);
+                                                text_Addstudent[i].setFont(font);
+                                                text_Addstudent[i].setFillColor(Color::White);
+                                                text_Addstudent[i].setPosition(0, 32 * i);
+
+                                            }
+                                            bool nameInputActive = true;
+                                            bool rollInputActive = false;
+                                            bool contactInputActive = false;
+                                            bool ageInputActive = false;
+                                            while (Add_Student.isOpen())
+                                            {
+                                                Event Add_Student_Event;
+
+                                                while (Add_Student.pollEvent(Add_Student_Event)) {
+                                                    if (Add_Student_Event.type == Event::Closed) {
+                                                        Add_Student.close();
+                                                    }
+                                                    if (Add_Student_Event.key.code == Keyboard::Escape) 
+                                                    {
+                                                        Add_Student.close();
+                                                    }
+
+                                                    if (Add_Student_Event.type == Event::TextEntered) 
+                                                    {
+                                                        if (Add_Student_Event.text.unicode < 128 && Add_Student_Event.text.unicode > 31) 
+                                                        {
+                                                            if (nameInputActive) 
+                                                            {
+                                                                name += Add_Student_Event.text.unicode;
+                                                                userInputTextname.setString(name);
+                                                                window.draw(userInputTextname);
+                                                            }
+                                                            else if (rollInputActive) 
+                                                            {
+                                                                rollnumber += Add_Student_Event.text.unicode;
+                                                                userInputTextrollno.setString(rollnumber);
+                                                                window.draw(userInputTextrollno);
+                                                            }
+                                                            else if (contactInputActive) 
+                                                            {
+                                                                contact += Add_Student_Event.text.unicode;
+                                                                userInputTextcont.setString(contact);
+                                                                window.draw(userInputTextcont);
+                                                            }
+                                                            else if (ageInputActive)
+                                                            {
+                                                                age += Add_Student_Event.text.unicode;
+                                                                userInputTextage.setString(age);
+                                                                window.draw(userInputTextage);
+                                                            }
+                                                        }
+                                                        else if (Add_Student_Event.text.unicode == 8) 
+                                                        { 
+                                                            if (nameInputActive && !name.empty()) 
+                                                            {
+                                                                name.pop_back();
+                                                                userInputTextname.setString(name);
+                                                                window.draw(userInputTextname);
+                                                            }
+                                                            else if (rollInputActive && !rollnumber.empty()) 
+                                                            {
+                                                                rollnumber.pop_back();
+                                                                userInputTextrollno.setString(rollnumber);
+                                                                window.draw(userInputTextrollno);
+                                                            }
+                                                            else if (contactInputActive && !contact.empty()) 
+                                                            {
+                                                                contact.pop_back();
+                                                                userInputTextcont.setString(contact);
+                                                                window.draw(userInputTextcont);
+                                                            }
+                                                            else if (ageInputActive && !age.empty())
+                                                            {
+                                                                contact.pop_back();
+                                                                userInputTextcont.setString(contact);
+                                                                window.draw(userInputTextcont);
+                                                            }
+                                                        }
+                                                    }
+                                                    if (Add_Student_Event.type == Event::KeyPressed && Add_Student_Event.key.code == Keyboard::Enter) {
+                                                        if (nameInputActive) 
+                                                        {
+                                                            nameInputActive = false;
+                                                            rollInputActive = true;
+                                                        }
+                                                        else if (rollInputActive) 
+                                                        {
+                                                            rollInputActive = false;
+                                                            contactInputActive = true;
+                                                        }
+                                                        else if (contactInputActive) 
+                                                        {
+                                                            contactInputActive = false;
+                                                            ageInputActive = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            Save_Check = true;
+                                                        }
+                                                    }
+                                                }
+
+                                                Add_Student.clear(); // Clear the window before drawing
+
+                                                text_Addstudent[0].setString("1 - Enter Student name");
+                                                text_Addstudent[1].setString("2 - Enter Student Roll number ");
+                                                text_Addstudent[2].setString("3 - Enter Student Contact Number");
+                                                text_Addstudent[3].setString("4 - Enter Student Age");
+
+                                                for (int i = 0; i < 4; i++)
+                                                {
+                                                    Add_Student.draw(text_Addstudent[i]);
+                                                }
+                                                Add_Student.draw(userInputTextname); // name 
+                                                Add_Student.draw(userInputTextrollno);  // roll number 
+                                                Add_Student.draw(userInputTextcont);  // contact
+                                                Add_Student.draw(userInputTextage);   // age
+                                                Add_Student.display();
+
+                                                if (Save_Check)
+                                                {
+                                                    student obj;
+                                                    int AgeInt = stoi(age);
+                                                    obj.enroll_student(name, rollnumber, AgeInt, contact);
+                                                    add_student(obj);  // add student into file 
+                                                    Save_Check = false;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
+                               
                                 Register.close();
                                 Marks.close();
                                 Attendence.close();
                                 Withdraw.close();
                                 Exit.close();
-                                Enroll.clear();
+
+                                displayStudentSubMenu(Enroll);
+                         
                                 Enroll.display();
                             }
                         }
+
                         if (x == 1) {
                             while (Register.isOpen()) {
                                 Event eaevent;
@@ -1320,7 +1634,7 @@ public:
                                         break; // Break out of the inner loop
                                     }
 
-                                    if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Escape) {
+                                    if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Num4) {
                                         Register.close();
                                     }
                                 }
@@ -1330,8 +1644,7 @@ public:
                                 Attendence.close();
                                 Withdraw.close();
                                 Exit.close();
-
-                                Register.clear();
+                                displayCourseSubMenu(Register);
                                 Register.display();
                             }
                         }
@@ -1348,7 +1661,7 @@ public:
                                     }
                                     if (eaevent.type == Event::KeyPressed)
                                     {
-                                        if (eaevent.key.code == Keyboard::Escape)
+                                        if (eaevent.key.code == Keyboard::Num3)
                                         {
                                             Marks.close();
                                         }
@@ -1359,8 +1672,7 @@ public:
                                 Attendence.close();
                                 Withdraw.close();
                                 Exit.close();
-                                Marks.clear();
-
+                                displaymarkssubmeenu(Marks);
                                 Marks.display();
                             }
                         }
@@ -1377,7 +1689,7 @@ public:
                                     }
                                     if (eaevent.type == Event::KeyPressed)
                                     {
-                                        if (eaevent.key.code == Keyboard::Escape)
+                                        if (eaevent.key.code == Keyboard::Num3)
                                         {
                                             Attendence.close();
                                         }
@@ -1388,7 +1700,7 @@ public:
                                 Marks.close();
                                 Withdraw.close();
                                 Exit.close();
-                                Attendence.clear();
+                                displayattendencesubmenu(Attendence);
 
                                 Attendence.display();
                             }
@@ -1406,7 +1718,7 @@ public:
                                     }
                                     if (eaevent.type == Event::KeyPressed)
                                     {
-                                        if (eaevent.key.code == Keyboard::Escape)
+                                        if (eaevent.key.code == Keyboard::Num3)
                                         {
                                             Withdraw.close();
                                         }
@@ -1417,7 +1729,7 @@ public:
                                 Marks.close();
                                 Attendence.close();
                                 Exit.close();
-                                Withdraw.clear();
+                                display_withdraw_submenu(Withdraw);
 
                                 Withdraw.display();
                             }
@@ -1537,23 +1849,57 @@ public:
         }
 
     }
-    // this function will add new students in a system 
+    // this function will add new students in a system also in file handling 
     void add_student(student& obj)
     {
-        students[student_count_System] = obj;
-        char chh__ = 'a';
-        cout << "DO u want to store student data Permanently : (Press Y for yes N for no) :";
-        cin >> chh__;
-        if (chh__ == 'Y' || chh__ == 'y')
-        {
-            filehandling obj("Studentdata.txt");
-            obj.write_Student_data_into_File(students[student_count_System]);
-            student_count_System++;
-        }
-        else
-            cout << "\nStudent detail not saved \n";
 
+        // checking window for yes or no 
+        RenderWindow checkwindow(VideoMode(500, 300), "Saved or not");
+
+        checkwindow.clear(Color::Black);
+        Font font;
+        if (!font.loadFromFile("arial.ttf")) {
+            cerr << "Error loading font file." << endl;
+        }
+
+        Text text;
+        text.setFont(font);
+        text.setCharacterSize(24);
+        text.setFillColor(Color::White);
+
+        text.setPosition(50, 50);
+        text.setString("Do you want to store student\n data permanently?");
+
+        while (checkwindow.isOpen())
+        {
+            Event evnt;
+            while (checkwindow.pollEvent(evnt))
+            {
+                if (evnt.type == Event::Closed)
+                {
+                    checkwindow.close();
+                }
+                if (evnt.type == Event::KeyPressed)
+                {
+                    if (evnt.key.code == Keyboard::Y)
+                    {
+                        students[student_count_System] = obj;
+                        filehandling obj("Studentdata.txt");
+                        obj.write_Student_data_into_File(students[student_count_System]);
+                        student_count_System++;
+                        checkwindow.close();
+                    }
+                    if (evnt.key.code == Keyboard::N)
+                    {
+                        checkwindow.close();
+                    }
+                }
+            }
+            checkwindow.draw(text);
+            checkwindow.display();
+        }
     }
+
     void load_student_data()
     {
         student_count_System = 0;
@@ -1731,24 +2077,24 @@ int main()
 
     // Create a rectangle shape
     RectangleShape rectangle;
-    rectangle.setSize( Vector2f(500, 100)); // Set the size of the rectangle
+    rectangle.setSize(Vector2f(500, 100)); // Set the size of the rectangle
     rectangle.setPosition(200, 200);           // Set the position of the rectangle
-    rectangle.setFillColor( Color::Transparent); // Set the fill color to transparent
-    rectangle.setOutlineColor( Color::White);    // Set the outline color
+    rectangle.setFillColor(Color::Transparent); // Set the fill color to transparent
+    rectangle.setOutlineColor(Color::White);    // Set the outline color
     rectangle.setOutlineThickness(2.0f);             // Set the outline thickness
     string ID;
     // setting detail for user input 
     Text userInputText;
     userInputText.setFont(font);
     userInputText.setCharacterSize(24);
-    userInputText.setFillColor( Color::White);
+    userInputText.setFillColor(Color::White);
     userInputText.setPosition(220, 220);
     Text text_show;
     Text text_show2;
 
     bool shouldContinue = true;
 
-    
+
     while (shouldContinue)
     {
         Event aevent;
@@ -1756,49 +2102,47 @@ int main()
         {
             if (aevent.type == Event::TextEntered)
             {
-                    if (aevent.text.unicode < 128 && aevent.text.unicode > 31)
-                    {
-                        ID += aevent.text.unicode;
-                        userInputText.setString(ID);
-                        window.draw(userInputText);
-                    }
-                    else if (aevent.text.unicode == 8 && !ID.empty()) // backspace
-                    {
-                        ID.pop_back();
-                    }
+                if (aevent.text.unicode < 128 && aevent.text.unicode > 31)
+                {
+                    ID += aevent.text.unicode;
+                    userInputText.setString(ID);
+                    window.draw(userInputText);
+                }
+                else if (aevent.text.unicode == 8 && !ID.empty()) // backspace
+                {
+                    ID.pop_back();
                 }
             }
-            if (Keyboard::isKeyPressed(Keyboard::Enter))
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Enter))
+        {
+            checking_student = Authentication(ID);
+            if (checking_student)
             {
-                checking_student = Authentication(ID);
-                if (checking_student)
-                {
-                   // shouldContinue = false;
-                    window.clear();   
-                    System obj;
-                    obj.load_student_with_their_courses();
-                    obj.load_all_ava_courses();
-                    obj.displayMainMenu();
-                    obj.performMainMenuAction2();
-                }
-                else
-                {
-                    window.clear();
-                    text_show2.setFont(font);
-                    text_show2.setString("You are not a student of FAST - Try Again..");
-                    text_show2.setCharacterSize(24);
-                    text_show2.setFillColor(Color::White);
-                    text_show2.setPosition(400, 400);
-                    window.draw(text_show2);
-                    window.display();
-                }
+                window.clear();
+                System obj;
+                obj.load_student_with_their_courses();
+                obj.load_all_ava_courses();
+                obj.performMainMenuAction2();
             }
+            else
+            {
+                window.clear();
+                text_show2.setFont(font);
+                text_show2.setString("You are not a student of FAST - Try Again..");
+                text_show2.setCharacterSize(24);
+                text_show2.setFillColor(Color::White);
+                text_show2.setPosition(400, 400);
+                window.draw(text_show2);
+                window.display();
+            }
+        }
         window.clear();
         window.draw(text);
         window.draw(userInputText);
         window.draw(rectangle);
         window.draw(text_show2);
         window.display();
-        }
-    return 0;
     }
+    return 0;
+}
