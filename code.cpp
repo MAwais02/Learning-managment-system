@@ -23,7 +23,7 @@ private:
     RenderWindow window;
 
 public:
-    SFMLWindow(const VideoMode& mode, const String& title) : window(mode, title) 
+    SFMLWindow(const VideoMode& mode, const String& title) : window(mode, title)
     {
         window.setFramerateLimit(60);
     }
@@ -40,7 +40,7 @@ public:
         window.display();
     }
 
-    bool pollEvent( Event& event) {
+    bool pollEvent(Event& event) {
         return window.pollEvent(event);
     }
 };
@@ -52,7 +52,7 @@ private:
     Font font;
     Text text[6];  // as we have 5 menus 
 public:
-    SFMLMenuScreen(){}
+    SFMLMenuScreen() {}
     SFMLMenuScreen(float w, float h)
     {
         if (!(font.loadFromFile("arial.ttf")))
@@ -220,7 +220,7 @@ public:
 
         }
     }
-    void display_enroll_students(RenderWindow &window_Enroll , Text text)
+    void display_enroll_students(RenderWindow& window_Enroll, Text text)
     {
         string s = to_string(age);    // first convert int into string data type 
         text.setString("Name :" + name + "Roll no : " + roll_num + "Contact " + contact + "Age : " + s);
@@ -807,7 +807,7 @@ public:
         window.display();
     }
 
-    void displayStudentSubMenu(RenderWindow &Subwindow)
+    void displayStudentSubMenu(RenderWindow& Subwindow)
     {
         Text menuItems[5];
 
@@ -837,7 +837,7 @@ public:
         }
         //Subwindow.display();
     }
-    void displayCourseSubMenu(RenderWindow & Subwindow)
+    void displayCourseSubMenu(RenderWindow& Subwindow)
     {
         Text menuItems[4];
 
@@ -865,7 +865,7 @@ public:
             Subwindow.draw(text);
         }
     }
-    void displayattendencesubmenu(RenderWindow & Subwindow)
+    void displayattendencesubmenu(RenderWindow& Subwindow)
     {
         Text menuItems[3];
 
@@ -892,7 +892,7 @@ public:
             Subwindow.draw(text);
         }
     }
-    void displaymarkssubmeenu(RenderWindow & Subwindow)
+    void displaymarkssubmeenu(RenderWindow& Subwindow)
     {
         Text menuItems[3];
 
@@ -919,7 +919,7 @@ public:
             Subwindow.draw(text);
         }
     }
-    void display_withdraw_submenu(RenderWindow & Subwindow)
+    void display_withdraw_submenu(RenderWindow& Subwindow)
     {
         Text menuItems[3];
 
@@ -947,7 +947,7 @@ public:
         }
     }
 
-   void performMainMenuAction()
+    void performMainMenuAction()
     {
         //displayMainMenu2();
         //int choice;
@@ -1353,7 +1353,7 @@ public:
 
     void performMainMenuAction2()
     {
-        SFMLMenuScreen menu(window.getSize().x , window.getSize().y);
+        SFMLMenuScreen menu(window.getSize().x, window.getSize().y);
         while (window.isOpen())
         {
             Event aevent;
@@ -1382,7 +1382,7 @@ public:
                         RenderWindow Attendence(VideoMode(960, 720), "Marks");
                         RenderWindow Withdraw(VideoMode(960, 720), "Course Withdraw");
                         RenderWindow Exit(VideoMode(960, 720), "Exit");
-                        
+
                         int x = menu.mainmenupress();
                         if (x == 0)
                         {
@@ -1397,10 +1397,7 @@ public:
                                     }
                                     if (eaevent.type == Event::KeyPressed)
                                     {
-                                        if (eaevent.key.code == Keyboard::Num5)
-                                        {
-                                            Enroll.close();
-                                        }
+                                        // display student 
                                         if (eaevent.key.code == Keyboard::Num1)
                                         {
                                             RenderWindow showEnrollStudent(VideoMode(900, 600), "1 - Enroll Student Window");
@@ -1440,12 +1437,11 @@ public:
                                                 showEnrollStudent.display(); // display detail of student
                                             }
                                         }
-
                                         // ADD student into this 
-                                        bool Save_Check = false;
                                         if ((eaevent.key.code == Keyboard::Num2))
                                         {
 
+                                            bool Save_Check = false;
                                             RenderWindow Add_Student(VideoMode(900, 600), "Add Student");
                                             string name, rollnumber, contact;
                                             string  age;
@@ -1497,80 +1493,80 @@ public:
                                                     if (Add_Student_Event.type == Event::Closed) {
                                                         Add_Student.close();
                                                     }
-                                                    if (Add_Student_Event.key.code == Keyboard::Escape) 
+                                                    if (Add_Student_Event.key.code == Keyboard::Escape)
                                                     {
                                                         Add_Student.close();
                                                     }
 
-                                                    if (Add_Student_Event.type == Event::TextEntered) 
+                                                    if (Add_Student_Event.type == Event::TextEntered)
                                                     {
-                                                        if (Add_Student_Event.text.unicode < 128 && Add_Student_Event.text.unicode > 31) 
+                                                        if (Add_Student_Event.text.unicode < 128 && Add_Student_Event.text.unicode > 31)
                                                         {
-                                                            if (nameInputActive) 
+                                                            if (nameInputActive)
                                                             {
                                                                 name += Add_Student_Event.text.unicode;
                                                                 userInputTextname.setString(name);
-                                                                window.draw(userInputTextname);
+                                                                Add_Student.draw(userInputTextname);
                                                             }
-                                                            else if (rollInputActive) 
+                                                            else if (rollInputActive)
                                                             {
                                                                 rollnumber += Add_Student_Event.text.unicode;
                                                                 userInputTextrollno.setString(rollnumber);
-                                                                window.draw(userInputTextrollno);
+                                                                Add_Student.draw(userInputTextrollno);
                                                             }
-                                                            else if (contactInputActive) 
+                                                            else if (contactInputActive)
                                                             {
                                                                 contact += Add_Student_Event.text.unicode;
                                                                 userInputTextcont.setString(contact);
-                                                                window.draw(userInputTextcont);
+                                                                Add_Student.draw(userInputTextcont);
                                                             }
                                                             else if (ageInputActive)
                                                             {
                                                                 age += Add_Student_Event.text.unicode;
                                                                 userInputTextage.setString(age);
-                                                                window.draw(userInputTextage);
+                                                                Add_Student.draw(userInputTextage);
                                                             }
                                                         }
-                                                        else if (Add_Student_Event.text.unicode == 8) 
-                                                        { 
-                                                            if (nameInputActive && !name.empty()) 
+                                                        else if (Add_Student_Event.text.unicode == 8)
+                                                        {
+                                                            if (nameInputActive && !name.empty())
                                                             {
                                                                 name.pop_back();
                                                                 userInputTextname.setString(name);
-                                                                window.draw(userInputTextname);
+                                                                Add_Student.draw(userInputTextname);
                                                             }
-                                                            else if (rollInputActive && !rollnumber.empty()) 
+                                                            else if (rollInputActive && !rollnumber.empty())
                                                             {
                                                                 rollnumber.pop_back();
                                                                 userInputTextrollno.setString(rollnumber);
-                                                                window.draw(userInputTextrollno);
+                                                                Add_Student.draw(userInputTextrollno);
                                                             }
-                                                            else if (contactInputActive && !contact.empty()) 
+                                                            else if (contactInputActive && !contact.empty())
                                                             {
                                                                 contact.pop_back();
                                                                 userInputTextcont.setString(contact);
-                                                                window.draw(userInputTextcont);
+                                                                Add_Student.draw(userInputTextcont);
                                                             }
                                                             else if (ageInputActive && !age.empty())
                                                             {
                                                                 contact.pop_back();
                                                                 userInputTextcont.setString(contact);
-                                                                window.draw(userInputTextcont);
+                                                                Add_Student.draw(userInputTextcont);
                                                             }
                                                         }
                                                     }
                                                     if (Add_Student_Event.type == Event::KeyPressed && Add_Student_Event.key.code == Keyboard::Enter) {
-                                                        if (nameInputActive) 
+                                                        if (nameInputActive)
                                                         {
                                                             nameInputActive = false;
                                                             rollInputActive = true;
                                                         }
-                                                        else if (rollInputActive) 
+                                                        else if (rollInputActive)
                                                         {
                                                             rollInputActive = false;
                                                             contactInputActive = true;
                                                         }
-                                                        else if (contactInputActive) 
+                                                        else if (contactInputActive)
                                                         {
                                                             contactInputActive = false;
                                                             ageInputActive = true;
@@ -1609,9 +1605,332 @@ public:
                                                 }
                                             }
                                         }
+                                        // update student 
+                                        if (eaevent.key.code == Keyboard::Num3)
+                                        {
+                                            string rollnumber;
+
+                                            Text text_Checker[3];
+                                            RenderWindow Edit_detail(VideoMode(900, 500), "Edit detail");
+                                            Font fontt; 
+                                            fontt.loadFromFile("arial.ttf");
+                                            Text text;
+                                            text.setCharacterSize(28);
+                                            text.setFont(fontt);
+                                            text.setString("Enter your roll number ");
+                                            Text userinput;
+                                            userinput.setCharacterSize(28);
+                                            userinput.setFont(fontt);
+                                            userinput.setPosition(0, 20);
+                                            while (Edit_detail.isOpen())
+                                            {
+                                                Event editdetailevent;
+                                                while (Edit_detail.pollEvent(editdetailevent))
+                                                {
+                                                    if (editdetailevent.type == Event::Closed) {
+                                                        Edit_detail.close();
+                                                    }
+                                                    if (editdetailevent.key.code == Keyboard::Escape)
+                                                    {
+                                                        Edit_detail.close();
+                                                    }
+                                                    if (editdetailevent.type == Event::TextEntered)
+                                                    {
+                                                        if (editdetailevent.text.unicode < 128 && editdetailevent.text.unicode > 31)
+                                                        {
+                                                            rollnumber += editdetailevent.text.unicode;
+                                                            userinput.setString(rollnumber);
+                                                            window.draw(userinput);
+                                                        }
+                                                    }
+
+                                                    if (Keyboard::isKeyPressed(Keyboard::Enter))
+                                                    {
+                                                        cout << "IN ENTER ";
+                                                        bool check = false;  // check for roll_Number 
+                                                        int index = 0;
+                                                        for (int i = 0; i < student_count_System; i++)
+                                                        {
+                                                            if (students[i].get_roll_number() == rollnumber)
+                                                            {
+                                                                check = true;
+                                                                index = i;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if (check)
+                                                        {                                                               
+                                                            RenderWindow EnterEditDetail(VideoMode(600, 200), "Enter detail");
+                                                            string name, rollnumber, contact;
+                                                            string  age;
+                                                            Font font;
+                                                            font.loadFromFile("arial.ttf");
+                                                            
+                                                            
+                                                            Text userInputTextname;
+                                                            userInputTextname.setFillColor(Color::White);
+                                                            userInputTextname.setFont(font);
+                                                            userInputTextname.setCharacterSize(28);
+                                                            userInputTextname.setPosition(20 + 300, 50 + 32 * 0 );
+                                                            
+                                                            
+                                                            
+                                                            Text userInputTextcont;
+                                                            userInputTextcont.setFillColor(Color::White);
+                                                            userInputTextcont.setFont(font);
+                                                            userInputTextcont.setCharacterSize(28);
+                                                            userInputTextcont.setPosition(20 + 300 , 50 + 32 * 1);
+                                                            
+                                                            Text userInputTextage;
+                                                            userInputTextage.setFillColor(Color::White);
+                                                            userInputTextage.setFont(font);
+                                                            userInputTextage.setCharacterSize(28);
+                                                            userInputTextage.setPosition(20 + 300, 50 + 32 * 2);
+                                                            
+                                                            bool nameInputActive = true;
+                                                            bool rollInputActive = false;
+                                                            bool contactInputActive = false;
+                                                            bool ageInputActive = false;
+                                                            bool Save_Check = false;
+                                                            Text messges_Saved_Sucesfully;
+                                                            messges_Saved_Sucesfully.setFont(fontt);
+                                                            messges_Saved_Sucesfully.setCharacterSize(28);
+                                                            messges_Saved_Sucesfully.setPosition(20, 32 * 5);
+                                                            while(EnterEditDetail.isOpen() )
+                                                            {
+                                                               
+                                                                Event evt;
+                                                                while (EnterEditDetail.pollEvent(evt))
+                                                                {
+                                                                    if (evt.type == Event::Closed) {
+                                                                        EnterEditDetail.close();
+                                                                    }
+                                                                    if (evt.key.code == Keyboard::Escape)
+                                                                    {
+                                                                        EnterEditDetail.close();
+                                                                    }
+                                                                    if (evt.type == Event::Closed) 
+                                                                    {
+                                                                         Edit_detail.close();
+                                                                    }
+                                                                     if (evt.key.code == Keyboard::Escape)
+                                                                     {
+                                                                         Edit_detail.close();
+                                                                     }
+
+                                                                     if (evt.type == Event::TextEntered)
+                                                                     {
+                                                                         if (evt.text.unicode < 128 && evt.text.unicode > 31)
+                                                                         {
+                                                                             if (nameInputActive)
+                                                                             {
+                                                                                 name += evt.text.unicode;
+                                                                                 userInputTextname.setString(name);
+                                                                                 EnterEditDetail.draw(userInputTextname);
+                                                                             }
+                                                                             
+                                                                             else if (contactInputActive)
+                                                                             {
+                                                                                 contact += evt.text.unicode;
+                                                                                 userInputTextcont.setString(contact);
+                                                                                 EnterEditDetail.draw(userInputTextcont);
+                                                                             }
+                                                                             else if (ageInputActive)
+                                                                             {
+                                                                                 age += evt.text.unicode;
+                                                                                 userInputTextage.setString(age);
+                                                                                 EnterEditDetail.draw(userInputTextage);
+                                                                             }
+                                                                         }
+                                                                         else if (evt.text.unicode == 8)
+                                                                         {
+                                                                             if (nameInputActive && !name.empty())
+                                                                             {
+                                                                                 name.pop_back();
+                                                                                 userInputTextname.setString(name);
+                                                                                 EnterEditDetail.draw(userInputTextname);
+                                                                             }
+                                                                             else if (contactInputActive && !contact.empty())
+                                                                             {
+                                                                                 contact.pop_back();
+                                                                                 userInputTextcont.setString(contact);
+                                                                                 EnterEditDetail.draw(userInputTextcont);
+                                                                             }
+                                                                             else if (ageInputActive && !age.empty())
+                                                                             {
+                                                                                 contact.pop_back();
+                                                                                 userInputTextcont.setString(contact);
+                                                                                 EnterEditDetail.draw(userInputTextcont);
+                                                                             }
+                                                                         }
+                                                                     }
+                                                                     if (evt.type == Event::KeyPressed && evt.key.code == Keyboard::Enter) {
+                                                                         if (nameInputActive)
+                                                                         {
+                                                                             nameInputActive = false;
+                                                                             contactInputActive = true;
+                                                                         }
+                                                                         else if (contactInputActive)
+                                                                         {
+                                                                             contactInputActive = false;
+                                                                             ageInputActive = true;
+                                                                         }
+                                                                         else
+                                                                         {
+                                                                             Save_Check = true;
+                                                                         }
+                                                                     }
+                                                                     if (evt.type == Event::KeyPressed && evt.key.code == Keyboard::Enter && Save_Check == true)
+                                                                     {
+                                                                         int x = stoi(age);
+                                                                         students[index].set_age(x);
+                                                                         students[index].set_contact(contact);
+                                                                         students[index].set_name(name);
+                                                                         ofstream Filee_NamE("studentdata.txt", ios::trunc); // trunc remove all the existing data from the file 
+                                                                         for (int i = 0; i < student_count_System; i++)
+                                                                         {
+                                                                             filehandling obj("Studentdata.txt");
+                                                                             obj.write_Student_data_into_File(students[i]);    // again write data into file after trunc
+                                                                         }
+                                                                             messges_Saved_Sucesfully.setString("UPdtaed Sucessfully press ESC for Exit ");
+                                                                     }
+                                                                }
+                                                                EnterEditDetail.draw(messges_Saved_Sucesfully);
+                                                                EnterEditDetail.draw(userInputTextname); // name 
+                                                                EnterEditDetail.draw(userInputTextcont);  // contact
+                                                                EnterEditDetail.draw(userInputTextage);   // age
+                                                                for (int i = 0; i < 3; i++)
+                                                                {
+                                                                    text_Checker[i].setCharacterSize(28);
+                                                                    text_Checker[i].setFillColor(Color::White);
+                                                                    text_Checker[i].setPosition(20, 50 + 32 * i);
+                                                                    text_Checker[i].setFont(fontt);
+                                                                }
+                                                                text_Checker[0].setString("Enter Edited Name :");
+                                                                text_Checker[1].setString("Enter Edited Age :");
+                                                                text_Checker[2].setString("Enter Edited Contact :");
+                                                                for (int i = 0; i < 3; i++)
+                                                                {
+                                                                    EnterEditDetail.draw(text_Checker[i]);
+                                                                }
+                                                                EnterEditDetail.display();
+                                                            }
+                                                        }
+                                                     
+                                                    }
+                                                }
+                                                
+                                                Edit_detail.draw(text);
+                                                Edit_detail.draw(userinput);
+                                                Edit_detail.display();
+                                                
+                                            }
+                                        }
+                                        // remove student
+                                        if (eaevent.key.code == Keyboard::Num4)
+                                        {
+                                            RenderWindow removeStudent(VideoMode(800, 600), "Remove Student");
+                                            Font fontt;
+                                            fontt.loadFromFile("arial.ttf");
+                                            Text Remove;
+                                            Remove.setFont(fontt);
+                                            Remove.setFillColor(Color::White);
+                                            Remove.setCharacterSize(28);
+                                            Remove.setString("ENter ROll number to Remove Student : ");
+                                            Remove.setPosition(100, 100);
+
+                                            Text Conformation;
+                                            Conformation.setFillColor(Color::White);
+                                            Conformation.setCharacterSize(28);
+                                            Conformation.setFont(fontt);
+                                            Conformation.setPosition(20, 400);
+                                            
+                                            Text userinput;
+                                            userinput.setFillColor(Color::White);
+                                            userinput.setCharacterSize(28);
+                                            userinput.setPosition(200, 300);
+                                            userinput.setFont(fontt);
+
+                                            string roll_Number;
+                                            int index = 0;
+                                            bool check_Ava = false;
+                                            int assingn_value = 1;
+                                            while (removeStudent.isOpen())
+                                            {
+                                                Event obj;
+                                                while (removeStudent.pollEvent(obj))
+                                                {
+                                                    if (obj.type == Event::Closed)
+                                                    {
+                                                        removeStudent.close();
+                                                    }
+                                                    if (obj.key.code == Keyboard::Escape)
+                                                    {
+                                                        removeStudent.close();
+                                                    }
+                                                    if (obj.type == Event::TextEntered)
+                                                    {
+                                                        if (obj.text.unicode < 128 && obj.text.unicode > 31)
+                                                        {
+
+                                                            roll_Number += obj.text.unicode;
+                                                            userinput.setString(roll_Number);
+                                                            removeStudent.draw(userinput);
+                                                        }
+                                                    }
+                                                    if (Keyboard::isKeyPressed(Keyboard::Enter))
+                                                    {
+                                                        for (int i = 0; i < student_count_System; i++)
+                                                        {
+                                                            if (students[i].get_roll_number() == roll_Number)
+                                                            {
+                                                                cout << "Found ";
+                                                                index = i;
+                                                                check_Ava = true;
+                                                                break;
+                                                            }
+
+                                                        }
+
+
+                                                    }
+                                                    if (check_Ava && assingn_value == 1)
+                                                    {
+                                                        students[index].set_name("");
+                                                        students[index].set_age(0);
+                                                        students[index].set_rollnumber("");
+                                                        students[index].set_contact("");
+
+                                                        ofstream Filee_NamE("studentdata.txt", ios::trunc); // trunc remove all data of student 
+                                                        for (int i = 0; i < student_count_System; i++)
+                                                        {
+                                                            
+                                                            filehandling obj3("Studentdata.txt");
+                                                            if (i != index)
+                                                            {
+                                                                obj3.write_Student_data_into_File(students[i]);
+                                                            }
+                                                        }
+                                                        student_count_System--;
+                                                        assingn_value = 0;
+                                                        Conformation.setString("Remove Sucesfully press ESC To countinue");
+                                                        sleep(milliseconds(400));
+                                                    }
+                                                    removeStudent.draw(Remove);
+                                                    removeStudent.draw(Conformation);
+                                                    removeStudent.draw(userinput);
+                                                    removeStudent.display();
+                                                }
+                                            }
+                                        }
+                                        if (eaevent.key.code == Keyboard::Num5)
+                                        {
+                                            Enroll.close();
+                                        }
                                     }
                                 }
-                               
+
                                 Register.close();
                                 Marks.close();
                                 Attendence.close();
@@ -1619,7 +1938,7 @@ public:
                                 Exit.close();
 
                                 displayStudentSubMenu(Enroll);
-                         
+
                                 Enroll.display();
                             }
                         }
@@ -1754,7 +2073,7 @@ public:
     }
 
     // this function will edit student details on compile ti
-    void edit_student_detail(string roll)
+    void edit_student_detail(string roll , Window &renderwindow)
     {
         bool check = false;
         int index = 0;
@@ -1767,9 +2086,10 @@ public:
                 break;
             }
         }
+
         if (check)
         {
-
+            
             cout << "\n----------Enter updated details--------------\n";
             int edit_choice;
             cout << "\nWHat u want t edit\n 1- name \n2 - contact\n 3- age\n";
@@ -1907,7 +2227,7 @@ public:
 
         if (!inputFile.is_open())
         {
-            cout << "Error opening file!" <<  endl;
+            cout << "Error opening file!" << endl;
             return;
         }
         // Assuming one line contains all the data
@@ -1932,7 +2252,7 @@ public:
             }
             else
             {
-                cout << "Error parsing data from file!" <<  endl;
+                cout << "Error parsing data from file!" << endl;
                 break;  // Exit the loop if parsing fails
             }
         }
@@ -1945,7 +2265,7 @@ public:
 
         if (!inputFile.is_open())
         {
-            cout << "Error opening file!" <<  endl;
+            cout << "Error opening file!" << endl;
             return;
         }
         // assume 1 line contain all data of student 
@@ -1982,7 +2302,7 @@ public:
 
         if (!inputFile.is_open())
         {
-            cout << "Error opening file!" <<  endl;
+            cout << "Error opening file!" << endl;
             return;
         }
 
@@ -2011,13 +2331,13 @@ public:
                 }
                 else
                 {
-                    cout << "Error parsing data from file!" <<  endl;
+                    cout << "Error parsing data from file!" << endl;
                     break;  // Exit the loop if parsing fails
                 }
             }
             else
             {
-                cout << "Not enough space in the courses array!" <<  endl;
+                cout << "Not enough space in the courses array!" << endl;
                 break;
             }
         }
