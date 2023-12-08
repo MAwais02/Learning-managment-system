@@ -349,7 +349,7 @@ public:
     {
         name = n;
     }
-    void set_course_code(int a)
+    void set_course_code(string a)
     {
         code = a;
     }
@@ -388,6 +388,16 @@ public:
     void display_course()
     {
         cout << " Code :" << code << " Name :" << name << " Credits :" << credits << " instructor :" << instructor << " Capacity :" << capacity << endl;
+    }
+    void display_Course(RenderWindow&win , Text text)
+    {
+        // convert int to string 
+        string stringCredits = to_string(credits);
+        string stringCapacity = to_string(capacity);
+        // code name instructor capacity credits
+        text.setString("Code :" + code + "Name : " + name + "Instructor :" + instructor + "Capacity :" + stringCapacity + "Credits :" + stringCredits);
+        win.draw(text);
+        
     }
     void displayStudents()
     {
@@ -1378,8 +1388,8 @@ public:
                     {
                         RenderWindow Enroll(VideoMode(960, 720), "Enroll student");
                         RenderWindow Register(VideoMode(960, 720), "Register student");
-                        RenderWindow Marks(VideoMode(960, 720), "Attedence");
-                        RenderWindow Attendence(VideoMode(960, 720), "Marks");
+                        RenderWindow Attendence(VideoMode(960, 720), "Attedence");
+                        RenderWindow Marks(VideoMode(960, 720), "Marks");
                         RenderWindow Withdraw(VideoMode(960, 720), "Course Withdraw");
                         RenderWindow Exit(VideoMode(960, 720), "Exit");
 
@@ -1403,38 +1413,39 @@ public:
                                             RenderWindow showEnrollStudent(VideoMode(900, 600), "1 - Enroll Student Window");
                                             Font fontt;
                                             fontt.loadFromFile("arial.ttf");
-                                            Text Show_Text;
-                                            Show_Text.setFont(fontt);
-                                            Show_Text.setFillColor(Color::White);
-
                                             int check = true;
-
+                                            Text text;
+                                            text.setFont(fontt);
+                                            text.setCharacterSize(24);
+                                            text.setFillColor(Color::White);
+                                            
+                                            string line;
                                             while (showEnrollStudent.isOpen())
                                             {
-                                                Event showEnrollStudentEvent;
-
-                                                while (showEnrollStudent.pollEvent(showEnrollStudentEvent))
+                                                ifstream inputFile("studentdata.txt");  // Replace "data.txt" with your actual file name
+                                                Event evnt;
+                                                while (showEnrollStudent.pollEvent(evnt))
                                                 {
-                                                    if (showEnrollStudentEvent.key.code == Keyboard::Escape)
+                                                    if (evnt.type == Event::Closed)
                                                     {
                                                         showEnrollStudent.close();
                                                     }
-                                                    if (showEnrollStudentEvent.type == Event::Closed)
+                                                    if (evnt.key.code == Keyboard::Escape)
                                                     {
                                                         showEnrollStudent.close();
                                                     }
                                                 }
-
-                                                showEnrollStudent.clear(Color::Black); // Clear the window before drawing
-
-                                                for (int i = 0; i < student_count_System; i++)
+                                                showEnrollStudent.clear(Color::Black);
+                                                int i = 0;
+                                                while(getline(inputFile, line))
                                                 {
-                                                    Show_Text.setPosition(0, 0 + 32 * i);
-                                                    students[i].display_enroll_students(showEnrollStudent, Show_Text);
-                                                    showEnrollStudent.draw(Show_Text);
+                                                    text.setPosition(0,  32 *  i);
+                                                    text.setString(line);
+                                                    showEnrollStudent.draw(text);
+                                                    i++;
                                                 }
-
-                                                showEnrollStudent.display(); // display detail of student
+                                                inputFile.close();
+                                                showEnrollStudent.display();
                                             }
                                         }
                                         // ADD student into this 
@@ -1879,7 +1890,7 @@ public:
                                                             removeStudent.draw(userinput);
                                                         }
                                                     }
-                                                    if (Keyboard::isKeyPressed(Keyboard::Enter))
+                                                    if (obj.key.code == Keyboard::Enter)
                                                     {
                                                         for (int i = 0; i < student_count_System; i++)
                                                         {
@@ -1890,32 +1901,60 @@ public:
                                                                 check_Ava = true;
                                                                 break;
                                                             }
-
                                                         }
-
-
-                                                    }
-                                                    if (check_Ava && assingn_value == 1)
-                                                    {
-                                                        students[index].set_name("");
-                                                        students[index].set_age(0);
-                                                        students[index].set_rollnumber("");
-                                                        students[index].set_contact("");
-
-                                                        ofstream Filee_NamE("studentdata.txt", ios::trunc); // trunc remove all data of student 
-                                                        for (int i = 0; i < student_count_System; i++)
+                                                        if (check_Ava)
                                                         {
-                                                            
-                                                            filehandling obj3("Studentdata.txt");
-                                                            if (i != index)
+                                                            for (int i = 0; i < student_count_System; i++)
                                                             {
-                                                                obj3.write_Student_data_into_File(students[i]);
+                                                                if (students[i].get_roll_number() == roll_Number)
+                                                                {
+                                                                    students[i].set_age(0);
+                                                                    students[i].set_name("");
+                                                                    students[i].set_contact("");
+                                                                    students[i].set_contact("");
+                                                      
+                                                                    student_count_System--;  // descrse studenet count 
+                                                                    break;
+                                                                }
                                                             }
+                                                            ofstream Filee_NamE("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file 
+                                                            for (int i = 0; i < student_count_System; i++)
+                                                            {
+                                                                if (index != i)
+                                                                {
+                                                                    filehandling obj("student_all_data.txt");
+                                                                    obj.write_student_courses(students[i]);    // again write data into file after trunc
+                                                                }
+                                                            }
+                                                            string tempFilename = "temp.txt"; // Temporary file
+                                                            string filename = "studentdata.txt";
+                                                            ifstream inputFile(filename);
+                                                            ofstream tempFile(tempFilename);
+                                                      
+                                                            regex patternRegex(roll_Number);
+                                                            string line;
+                                                      
+                                                            while (getline(inputFile, line)) 
+                                                            {
+                                                                if (!regex_search(line, patternRegex)) 
+                                                                {
+                                                                    tempFile << line << endl;
+                                                                }
+                                                            }
+                                                            inputFile.close();
+                                                            tempFile.close();
+                                                            if (remove(filename.c_str()) != 0) // delete org data 
+                                                            {   
+                                                                cerr << "Error\n" << endl;
+                                                                return;
+                                                            }
+                                                            if (rename(tempFilename.c_str(), filename.c_str()) != 0) 
+                                                            {
+                                                                cerr << "Error\n" << endl;
+                                                                return;
+                                                            }
+                                                            Conformation.setString("Remove Sucesfully press ESC To countinue");
                                                         }
-                                                        student_count_System--;
-                                                        assingn_value = 0;
-                                                        Conformation.setString("Remove Sucesfully press ESC To countinue");
-                                                        sleep(milliseconds(400));
                                                     }
                                                     removeStudent.draw(Remove);
                                                     removeStudent.draw(Conformation);
@@ -1930,7 +1969,6 @@ public:
                                         }
                                     }
                                 }
-
                                 Register.close();
                                 Marks.close();
                                 Attendence.close();
@@ -1943,17 +1981,251 @@ public:
                             }
                         }
 
-                        if (x == 1) {
+                        if (x == 1) 
+                        {
                             while (Register.isOpen()) {
                                 Event eaevent;
 
-                                while (Register.pollEvent(eaevent)) {
-                                    if (eaevent.type == Event::Closed) {
+                                while (Register.pollEvent(eaevent)) 
+                                {
+                                    if (eaevent.type == Event::Closed) 
+                                    {
                                         Register.close();
                                         break; // Break out of the inner loop
                                     }
 
-                                    if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Num4) {
+                                    // Show avalible courses 
+                                    if (eaevent.key.code == Keyboard::Num1)
+                                    {
+                                        RenderWindow Avalible_Courses(VideoMode(900, 600), "1 - Avalible courses");
+                                        Font fontt;
+                                        fontt.loadFromFile("arial.ttf");
+                                        int check = true;
+                                        Text text;
+                                        text.setFont(fontt);
+                                        text.setCharacterSize(24);
+                                        text.setFillColor(Color::White);
+
+                                        string line;
+                                        while (Avalible_Courses.isOpen())
+                                        {
+                                            Event evnt;
+                                            while (Avalible_Courses.pollEvent(evnt))
+                                            {
+                                                if (evnt.type == Event::Closed)
+                                                {
+                                                    Avalible_Courses.close();
+                                                }
+                                                if (evnt.key.code == Keyboard::Escape)
+                                                {
+                                                    Avalible_Courses.close();
+                                                }
+                                            }
+                                            for (int i = 0; i < course_count_system; i++)
+                                            {
+                                                text.setPosition(0, 32 * i);
+                                                courses[i].display_Course(Avalible_Courses, text);  // display courses 
+                                            }
+                                            Avalible_Courses.display();
+                                        }
+                                    }
+
+                                    // Register courses 
+                                    if (eaevent.key.code == Keyboard::Num3)
+                                    {
+                                        RenderWindow Register_Student_menu(VideoMode(900, 900), "Register Student Menu");
+                                        Text text;
+                                        Font font;
+                                        font.loadFromFile("arial.ttf");
+                                        text.setFont(font);
+                                        text.setCharacterSize(28);
+                                        text.setPosition(0, 0);
+                                        text.setString("ENter ROll number of student :");
+                                        string roll_Number;
+                                        Text UserInput;
+                                        UserInput.setFont(font);
+                                        UserInput.setCharacterSize(28);
+                                        UserInput.setPosition(0, 150);
+
+                                        Text t1, t2;
+                                        t1.setFillColor(Color::White); 
+                                        t2.setFillColor(Color::White);
+                                        t1.setPosition(200, 300); t2.setPosition(200, 300);
+                                        t1.setCharacterSize(28); t2.setCharacterSize(28);
+                                        t1.setFont(font);
+                                        t2.setFont(font);
+                                        while (Register_Student_menu.isOpen())
+                                        {
+                                            Event evnt;
+                                            while (Register_Student_menu.pollEvent(evnt))
+                                            {
+                                                if (evnt.type == Event::Closed)
+                                                {
+                                                    Register_Student_menu.close();
+                                                }
+                                                if (evnt.key.code == Keyboard::Escape)
+                                                {
+                                                    Register_Student_menu.close();
+                                                }
+                                                if (evnt.type == Event::TextEntered)
+                                                {
+                                                    if (evnt.text.unicode < 128 && evnt.text.unicode > 31)
+                                                    {
+                                                        roll_Number += evnt.text.unicode;
+                                                        UserInput.setString(roll_Number);
+                                                        Register_Student_menu.draw(UserInput);
+                                                    }
+                                                }
+                                                int student_index = 0;
+                                                
+                                                if (evnt.key.code  == Keyboard::Enter)
+                                                {                                                    
+                                                   bool Chk_Ava = false;
+                                                   int index = 0;
+                                                    for (int i = 0; i < student_count_System; i++)
+                                                    {
+                                                        if (roll_Number == students[i].get_roll_number())
+                                                        {
+                                                            index = i;
+                                                            student_index = i;
+                                                            Chk_Ava = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (Chk_Ava)
+                                                    {
+                                                        t1.setString("Enter Code of course :");
+                                                        string code_OF_Course;
+                                                        Text usERinput;
+                                                        usERinput.setFillColor(Color::White);
+                                                        usERinput.setCharacterSize(28);
+                                                        usERinput.setFont(font);
+                                                        usERinput.setPosition(300 , 500);
+
+                                                        Text Escapemsg;
+                                                        Escapemsg.setFillColor(Color::White);
+                                                        Escapemsg.setCharacterSize(28);
+                                                        Escapemsg.setFont(font);
+                                                        Escapemsg.setPosition(300, 700);
+
+                                                        Text No_Course_Exist;
+                                                        No_Course_Exist.setFillColor(Color::White);
+                                                        No_Course_Exist.setCharacterSize(28);
+                                                        No_Course_Exist.setFont(font);
+                                                        No_Course_Exist.setPosition(300, 750);
+
+                                                        Text COnformation;
+                                                        COnformation.setFillColor(Color::White);
+                                                        COnformation.setCharacterSize(28);
+                                                        COnformation.setFont(font);
+                                                        COnformation.setPosition(300, 600);
+
+                                                        Text max_Cap_Reached;
+                                                        max_Cap_Reached.setFillColor(Color::White);
+                                                        max_Cap_Reached.setPosition(200, 200);
+                                                        max_Cap_Reached.setCharacterSize(28);
+                                                        max_Cap_Reached.setFont(font);
+
+                                                        Register_Student_menu.draw(t1);
+                                                        bool enterKeyPressed = false;
+                                                        RenderWindow entercodewindow(VideoMode(900, 900), "ENter code");
+                                                        while (entercodewindow.isOpen())
+                                                        {
+                                                            Event evntforentercodewindow;
+                                                            while (entercodewindow.pollEvent(evntforentercodewindow))
+                                                            {
+                                                                if (evntforentercodewindow.type == Event::Closed)
+                                                                {
+                                                                    entercodewindow.close();
+                                                                }
+                                                                if (evntforentercodewindow.key.code == Keyboard::Escape)
+                                                                {
+                                                                    entercodewindow.close();
+                                                                }
+                                                                if (evntforentercodewindow.type == Event::TextEntered)
+                                                                {
+                                                                    if (evntforentercodewindow.text.unicode < 128 && evntforentercodewindow.text.unicode > 31)
+                                                                    {
+                                                                        code_OF_Course += evntforentercodewindow.text.unicode;
+                                                                        usERinput.setString(code_OF_Course);
+                                                                        entercodewindow.draw(usERinput);
+                                                                    }
+                                                                }
+                                                                bool check_course_avalibility = false;;
+
+                                                                if (Keyboard::isKeyPressed(Keyboard::Enter) && !enterKeyPressed)
+                                                                {
+                                                                    cout << "ENter press ";
+                                                                    enterKeyPressed = true;
+                                                                    for (int i = 0; i < course_count_system; i++)
+                                                                    {
+                                                                        if (courses[i].get_code() == code_OF_Course)
+                                                                        {
+                                                                            // cout << "Course index :" << students[student_index].get_course_count_student() << endl;
+                                                                            if (students[student_index].get_course_count_student() > 4)
+                                                                            {
+                                                                                max_Cap_Reached.setString("MAx course count reached ! Thank you");
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                students[student_index].add_course_student(courses[i].get_name());
+
+                                                                                COnformation.setString("Registered Sucessfylly");
+                                                                                Escapemsg.setString("Press Escape to countinue");
+                                                                                entercodewindow.draw(COnformation);
+                                                                                entercodewindow.draw(Escapemsg);
+                                                                                check_course_avalibility = true;
+                                                                                // write all data into file first delete data then write new data 
+                                                                                {
+                                                                                    ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
+
+                                                                                    filehandling obj("student_all_data.txt");
+                                                                                    for (int i = 0; i < student_count_System; i++)
+                                                                                    {
+                                                                                        obj.write_student_courses(students[i]);   // write student data with courses 
+                                                                                    }
+                                                                                }
+                                                                                break;
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                }
+                                                                /*else
+                                                                {
+                                                                    No_Course_Exist.setString("NO Course Exist with that Code number ");
+                                                                    Escapemsg.setString("Press Escape to countinue");
+                                                                    entercodewindow.draw(No_Course_Exist);
+                                                                    entercodewindow.draw(Escapemsg);
+                                                                }*/
+                                                            }
+                                                            entercodewindow.draw(max_Cap_Reached);
+                                                            entercodewindow.draw(t1);
+                                                            entercodewindow.draw(COnformation);
+                                                            entercodewindow.draw(No_Course_Exist);
+                                                            entercodewindow.draw(usERinput);
+                                                            entercodewindow.draw(Escapemsg);
+                                                            entercodewindow.display();
+
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        t2.setString("No Student Exist...Try Again ");
+                                                    }
+
+                                                }
+                                            }
+                                           // Register_Student_menu.draw(t1);
+                                            Register_Student_menu.draw(t2);
+                                            Register_Student_menu.draw(text);
+                                            Register_Student_menu.draw(UserInput);
+                                            Register_Student_menu.display();
+                                        }
+                                    }
+                                    if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Num4) 
+                                    {
                                         Register.close();
                                     }
                                 }
@@ -1967,6 +2239,7 @@ public:
                                 Register.display();
                             }
                         }
+                        // x == 2 is attendence 
                         if (x == 2)
                         {
                             while (Marks.isOpen())
@@ -2272,7 +2545,6 @@ public:
         string line;
         while (getline(inputFile, line))
         {
-
             istringstream iss(line);    // input stream 
 
             string name, rollNumber, contact;
@@ -2314,8 +2586,8 @@ public:
             if (course_count_system < 100) {
                 istringstream iss(line);
 
-                int code, capacCiTy, credit;
-                string name, inst;
+                int  capacCiTy, credit;
+                string code, name, inst;
 
                 // Assuming the data in the file is formatted as "Code Name Inst Capacity Credits"
                 if (iss >> code >> name >> capacCiTy >> inst >> credit)    // iss is input stream 
