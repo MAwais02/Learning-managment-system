@@ -286,7 +286,7 @@ protected:
     string instructor;
     int credits;
     int capacity;
-    student* students;
+    student* students; // max student 50
     int numStudents;
 
 public:
@@ -298,7 +298,6 @@ public:
         instructor = " ";
         credits = 0;
         capacity = 0;
-        students = nullptr;
     }
     Course(string code, string name, string instructor, int credits, int capacity)
     {
@@ -1960,7 +1959,162 @@ public:
                                             Register_Student_menu.display();
                                         }
                                     }
+                                    // Add student into Course
                                     if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Num3)
+                                    {
+                                        RenderWindow AddstudentINtoCOurse(desktopMode, "AddstudentintoCourse");
+
+                                        Text Entercode;
+                                        Font font;
+                                        font.loadFromFile("arial.ttf");
+                                        Entercode.setFont(font);
+                                        Entercode.setCharacterSize(50);
+                                        Entercode.setPosition(50, 400);
+                                        Entercode.setString("ENter Code OF Course :");
+                                        Entercode.setFillColor(Color::Black);
+
+                                        
+                                        Text NostudentExistmsg;
+                                        NostudentExistmsg.setFont(font);
+                                        NostudentExistmsg.setCharacterSize(50);
+                                        NostudentExistmsg.setPosition(50, 800);
+                                        NostudentExistmsg.setFillColor(Color::Black);
+
+                                        Text NocourseExistmsg;
+                                        NocourseExistmsg.setFont(font);
+                                        NocourseExistmsg.setCharacterSize(50);
+                                        NocourseExistmsg.setPosition(50, 900);
+                                        NocourseExistmsg.setFillColor(Color::Black);
+
+                                        string Codee;
+                                        Text UserInputforADD;
+                                        UserInputforADD.setFont(font);
+                                        UserInputforADD.setCharacterSize(50);
+                                        UserInputforADD.setPosition(950, 400);
+                                        UserInputforADD.setFillColor(Color::Black);
+                                        bool Checkingofcourse = false;
+                                        while (AddstudentINtoCOurse.isOpen())
+                                        {
+                                            Event evntforaddstudentintocourse;
+                                            while (AddstudentINtoCOurse.pollEvent(evntforaddstudentintocourse))
+                                            {
+                                                if (evntforaddstudentintocourse.type == Event::Closed)
+                                                {
+                                                    AddstudentINtoCOurse.close();
+                                                }
+                                                if (evntforaddstudentintocourse.key.code == Keyboard::Escape)
+                                                {
+                                                    AddstudentINtoCOurse.close();
+                                                }
+                                                if (evntforaddstudentintocourse.type == Event::TextEntered)
+                                                {
+                                                    if (evntforaddstudentintocourse.text.unicode < 128 && evntforaddstudentintocourse.text.unicode > 31)
+                                                    {
+                                                        Codee += evntforaddstudentintocourse.text.unicode;
+                                                        UserInputforADD.setString(Codee);
+                                                        AddstudentINtoCOurse.draw(UserInputforADD);
+                                                    }
+                                                    else if (evntforaddstudentintocourse.text.unicode == 8 && !Codee.empty()) // backspace
+                                                    {
+                                                        Codee.pop_back();
+                                                        UserInputforADD.setString(Codee);
+                                                        AddstudentINtoCOurse.draw(UserInputforADD);
+                                                    }
+                                                }
+                                                if (evntforaddstudentintocourse.type == Event::KeyReleased && evntforaddstudentintocourse.key.code == Keyboard::Enter)
+                                                {
+
+                                                    for (int i = 0; i < course_count_system; i++)
+                                                    {
+                                                        if (courses[i].get_code() == Codee)
+                                                        {
+                                                            Checkingofcourse = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (Checkingofcourse == true)
+                                            {
+
+                                                Text EnterRoll_NUmber;
+                                                EnterRoll_NUmber.setFont(font);
+                                                EnterRoll_NUmber.setCharacterSize(50);
+                                                EnterRoll_NUmber.setPosition(50, 500);
+                                                EnterRoll_NUmber.setString("ENter Roll number OF Student");
+                                                EnterRoll_NUmber.setFillColor(Color::Black);
+
+                                                Text text4;
+                                                text4.setFont(font);
+                                                text4.setCharacterSize(50);
+                                                text4.setPosition(50, 700);
+                                                text4.setFillColor(Color::Green);
+
+
+                                                string Roll_NUmber;
+                                                Text UserInputforADDRollNumber;
+                                                UserInputforADDRollNumber.setFont(font);
+                                                UserInputforADDRollNumber.setCharacterSize(50);
+                                                UserInputforADDRollNumber.setPosition(950, 500);
+                                                UserInputforADDRollNumber.setFillColor(Color::Black);
+
+
+                                                while (AddstudentINtoCOurse.isOpen())
+                                                {
+                                                    Event eevnt4;
+                                                    while (AddstudentINtoCOurse.pollEvent(eevnt4))
+                                                    {
+                                                        if (eevnt4.key.code == Keyboard::Escape)
+                                                        {
+                                                            AddstudentINtoCOurse.close();
+                                                        }
+                                                        if (eevnt4.type == Event::TextEntered)
+                                                        {
+
+                                                            if (eevnt4.text.unicode < 128 && eevnt4.text.unicode > 31)
+                                                            {
+                                                                Roll_NUmber += eevnt4.text.unicode;
+                                                                UserInputforADDRollNumber.setString(Roll_NUmber);
+                                                                AddstudentINtoCOurse.draw(UserInputforADDRollNumber);
+
+                                                            }
+                                                            else if (eevnt4.text.unicode == 8 && !Roll_NUmber.empty()) // backspace
+                                                            {
+                                                                Roll_NUmber.pop_back();  // Remove the last character
+                                                                UserInputforADDRollNumber.setString(Roll_NUmber);
+                                                                AddstudentINtoCOurse.draw(UserInputforADDRollNumber);
+
+                                                            }
+                                                        }
+                                                        if (eevnt4.key.code == Keyboard::Enter && eevnt4.type == Event::KeyReleased)
+                                                        {
+                                                            for (int i = 0; i < student_count_System; i++)
+                                                            {
+                                                                if (students[i].get_roll_number() == Roll_NUmber)
+                                                                {
+                                                                    courses[i].addStudent(students[i]); // Student Added 
+                                                                    text4.setString("Entered Succesfully ");
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    AddstudentINtoCOurse.draw(text4);
+                                                    AddstudentINtoCOurse.draw(UserInputforADDRollNumber);
+                                                    AddstudentINtoCOurse.draw(EnterRoll_NUmber);
+                                                    AddstudentINtoCOurse.display();
+                                                }
+                                            }
+                                            AddstudentINtoCOurse.clear(Color::White);
+                                            sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
+                                            AddstudentINtoCOurse.draw(sprite);
+                                            AddstudentINtoCOurse.draw(Entercode);
+                                            AddstudentINtoCOurse.draw(UserInputforADD);
+                                            AddstudentINtoCOurse.display();
+                                        }
+
+
+                                    }
+                                    if (eaevent.type == Event::KeyPressed && eaevent.key.code == Keyboard::Num5)
                                     {
                                         Register.close();
                                     }
@@ -2140,7 +2294,7 @@ public:
                                                     bool checkforenter = false;
                                                     if (chk)
                                                     {
-
+                                                        bool ENtermarksCheck = false;
                                                         char Att = '\0';
                                                         Text UserInputforAttendece;
                                                         UserInputforAttendece.setFont(font);
@@ -2181,19 +2335,51 @@ public:
                                                                     {
                                                                         if (EnterAttendeceEVENT.text.unicode < 128 && EnterAttendeceEVENT.text.unicode > 31)
                                                                         {
-                                                                            UserInputforAttendece.setPosition(750, 300 + 60 * p++);
-                                                                            
-                                                                            Att += EnterAttendeceEVENT.text.unicode;
-                                                                            UserInputforAttendece.setString(Att);
-                                                                            checkforx++;
+                                                                            if (checkforx == 0 && checkforx < x)
+                                                                            {
+                                                                                UserInputforAttendece.setPosition(450 + 170, 300 + 100 * 0);
+                                                                                Att += EnterAttendeceEVENT.text.unicode;
+                                                                                UserInputforAttendece.setString(Att);
+                                                                                ENtermarksCheck = true;
+                                                                            }
+                                                                            if (checkforx == 1 && checkforx < x)
+                                                                            {
+                                                                                UserInputforAttendece.setPosition(450 + 170, 300 + 100 * 1);
+                                                                                Att += EnterAttendeceEVENT.text.unicode;
+                                                                                UserInputforAttendece.setString(Att);
+                                                                                ENtermarksCheck = true;
+
+                                                                            }
+                                                                            if (checkforx == 2 && checkforx < x)
+                                                                            {
+                                                                                UserInputforAttendece.setPosition(450 + 170, 300 + 100 * 2);
+                                                                                Att += EnterAttendeceEVENT.text.unicode;
+                                                                                UserInputforAttendece.setString(Att);
+                                                                                ENtermarksCheck = true;
+
+                                                                            }
+                                                                            if (checkforx == 3 && checkforx < x)
+                                                                            {
+                                                                                UserInputforAttendece.setPosition(450 + 170, 300 + 100 * 3);
+                                                                                Att += EnterAttendeceEVENT.text.unicode;
+                                                                                UserInputforAttendece.setString(Att);
+                                                                                ENtermarksCheck = true;
+
+                                                                            }
+                                                                            if (checkforx == 4 && checkforx < x)
+                                                                            {
+                                                                                UserInputforAttendece.setPosition(950 + 170, 300 * 100 * 4);
+                                                                                Att += EnterAttendeceEVENT.text.unicode;
+                                                                                UserInputforAttendece.setString(Att);
+                                                                                ENtermarksCheck = true;
+                                                                            }
                                                                         }
-                                                                       
                                                                     }
 
-                                                                    if (Keyboard::isKeyPressed(Keyboard::Enter) && !enterKeyPressed)
+                                                                    if (EnterAttendeceEVENT.key.code == Keyboard::Enter && !enterKeyPressed && ENtermarksCheck)
                                                                     {
-                                                                        cout << Att << endl;
                                                                         students[index_ofSTu].mark_attendence(Att);
+                                                                        checkforx++;
                                                                         Att = '\0';
                                                                         enterKeyPressed = true;
                                                                     }
@@ -2201,13 +2387,14 @@ public:
                                                                     {
                                                                         enterKeyPressed = false;
                                                                     }
-                                                                    if (checkforx - 1 == x && checkkk)
+                                                                    if (checkforx == x && checkkk)
                                                                     {
                                                                         checkkk = false;
                                                                         text2.setString("Entered Succesfully \n Press Escape To Countinue :");
                                                                         filehandling obj("student_attendence.txt");
-                                                                        obj.write_attendence(students[index_ofSTu], x);
+                                                                        obj.write_attendence(students[index_ofSTu], x); // x is no of coursses
                                                                     }
+
                                                                 }
                                                                 SubWindowENterAttendence.clear(Color::White);
 
