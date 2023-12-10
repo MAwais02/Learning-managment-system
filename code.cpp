@@ -19,6 +19,7 @@ VideoMode desktopMode = VideoMode::getDesktopMode();
 
 class filehandling;    // forward decleration 
 class validaltion;
+class Course; // Forward declaration
 
 class SFMLWindow {
 private:
@@ -218,6 +219,10 @@ public:
         text.setString("Name :" + name + "Roll no : " + roll_num + "Contact " + contact + "Age : " + s);
         window_Enroll.draw(text);
     }
+    void displayInfo()
+    {
+        cout << "Studen name : " << name;
+    }
     void set_name(string n)
     {
         name = n;
@@ -282,6 +287,7 @@ protected:
     int credits;
     int capacity;
     student* students;
+    int numStudents;
 
 public:
     static int student_Course_count;
@@ -314,28 +320,29 @@ public:
             cout << "Max capacity reached \n";
         }
     }
-
-    void removeStudent(string rollNumber)  // check student with roll number 
+    void removeStudent(student* student)
     {
-        student* temp;
-        temp = new student[student_Course_count - 1];
-
-        for (int i = 0; i < student_Course_count; i++)
+        for (int i = 0; i < numStudents; ++i)
         {
-            if (students[i].get_roll_number() != rollNumber)
+            if (students[i].get_roll_number() == student->get_roll_number())
             {
-                temp[i] = students[i];
+                for (int j = i; j < numStudents - 1; ++j)
+                {
+                    students[j] = students[j + 1];
+                }
+                --numStudents;
+                return;
             }
         }
-        delete[] students;
-        student_Course_count--;
-        students = new student[student_Course_count];
-        for (int i = 0; i < student_Course_count; i++)
+    }
+    void displayStudents()
+    {
+        cout << "Students enrolled in " << name << " Code: " << code << endl ;
+        for (int i = 0; i < numStudents; ++i)
         {
-            students[i] = temp[i];
+            students[i].displayInfo();
+            cout << endl;
         }
-
-        delete[] temp;
     }
     void set_course_name(string n)
     {
@@ -780,21 +787,23 @@ public:
     }
     void displayCourseSubMenu(RenderWindow& Subwindow)
     {
-        Text menuItems[3];
+        Text menuItems[5];
 
         Font font;
         font.loadFromFile("arial.ttf");
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 5; ++i)
         {
             menuItems[i].setFont(font);
             menuItems[i].setCharacterSize(50);
             menuItems[i].setFillColor(Color::Black);
         }
-        menuItems[0].setString("1 - Avalible Course ");
-        menuItems[1].setString("2 - Register Course ");
-        menuItems[2].setString("3 - Back ");
+        menuItems[0].setString("1 - Avalible Course");
+        menuItems[1].setString("2 - Register Course");
+        menuItems[2].setString("3 - Add student into Course");
+        menuItems[3].setString("4 - Remove Student From COurse");
+        menuItems[4].setString("5 - Back ");
 
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 5; ++i)
         {
             menuItems[i].setPosition(50, 300 + i * 100);
         }
@@ -958,12 +967,13 @@ public:
                                             int check = true;
                                             Text text;
                                             text.setFont(fontt);
-                                            text.setCharacterSize(50);
+                                            text.setCharacterSize(30);
                                             text.setFillColor(Color::Black);
 
                                             string line;
                                             while (showEnrollStudent.isOpen())
                                             {
+                                                ifstream inputFile("studentdata.txt");
                                                 Event evnt;
                                                 while (showEnrollStudent.pollEvent(evnt))
                                                 {
@@ -976,24 +986,18 @@ public:
                                                         showEnrollStudent.close();
                                                     }
                                                 }
-                                                for (int i = 0; i < student_count_System; i++)
-                                                {
-                                                    DisplayStudents[i].setCharacterSize(30);
-                                                    DisplayStudents[i].setFillColor(Color::Black);
-                                                    DisplayStudents[i].setFont(fontt);
-                                                    DisplayStudents[i].setPosition(50, 300 + 50 * i);
-                                                    string x = to_string(students[i].get_age());
-                                                    DisplayStudents[i].setString("Student Name :" + students[i].get_name() + " | Roll Number :" + students[i].get_roll_number() + " | Student Age :" + x + " | Student Contact :" + students[i].get_contact());
-                                                }
                                                 showEnrollStudent.clear(Color::White);
+                                                int i = 0;
+                                                while (getline(inputFile, line))
+                                                {
+                                                    text.setPosition(20, 300 + 50 * i);
+                                                    text.setString(line);
+                                                    showEnrollStudent.draw(text);
+                                                    i++;
+                                                }
+                                                inputFile.close();
                                                 showEnrollStudent.draw(sprite);
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
-
-                                                for (int i = 0; i < student_count_System; i++)
-                                                {
-                                                    showEnrollStudent.draw(DisplayStudents[i]);
-                                                }
-                                                showEnrollStudent.draw(STudentAvaliblemsg);
                                                 showEnrollStudent.display();
                                             }
                                         }
@@ -1041,6 +1045,26 @@ public:
                                             userInputTextage.setFont(font);
                                             userInputTextage.setCharacterSize(50);
                                             userInputTextage.setPosition(1000, 300 + 3 * 100);
+                                            //------------------Valid Inputs-------------------
+                                            Text Validrollnumberprint;
+                                            Validrollnumberprint.setFillColor(Color::Red);
+                                            Validrollnumberprint.setFont(font);
+                                            Validrollnumberprint.setCharacterSize(28);
+                                            Validrollnumberprint.setPosition(70 , 300 + 1 * 100 + 60 );
+
+                                            Text ValidAgeprint;
+                                            ValidAgeprint.setFillColor(Color::Red);
+                                            ValidAgeprint.setFont(font);
+                                            ValidAgeprint.setCharacterSize(28);
+                                            ValidAgeprint.setPosition(1100, 300 + 3 * 100);
+
+                                            Text Validcontctprint;
+                                            Validcontctprint.setFillColor(Color::Red);
+                                            Validcontctprint.setFont(font);
+                                            Validcontctprint.setCharacterSize(28);
+                                            Validcontctprint.setPosition(1100, 300 + 3 * 100);
+                                            //---------------------------------------------------
+
                                             for (int i = 0; i < 4; i++)
                                             {
                                                 text_Addstudent[i].setCharacterSize(50);
@@ -1049,6 +1073,13 @@ public:
                                                 text_Addstudent[i].setPosition(50, 300 + 100 * i);
 
                                             }
+                                            //----Chk Validity------
+                                            bool chkvalidage = false;
+                                            bool chkvalidcontact = false;
+                                            bool chkvalidrollnumber = false;
+                                            bool chkvalidname = false;
+                                            //----------------------
+
                                             bool nameInputActive = true;
                                             bool rollInputActive = false;
                                             bool contactInputActive = false;
@@ -1123,7 +1154,8 @@ public:
                                                             }
                                                         }
                                                     }
-                                                    if (Add_Student_Event.type == Event::KeyPressed && Add_Student_Event.key.code == Keyboard::Enter) {
+                                                    if (Add_Student_Event.type == Event::KeyPressed && Add_Student_Event.key.code == Keyboard::Enter) 
+                                                    {
                                                         if (nameInputActive)
                                                         {
                                                             nameInputActive = false;
@@ -1131,27 +1163,58 @@ public:
                                                         }
                                                         else if (rollInputActive)
                                                         {
-                                                            rollInputActive = false;
-                                                            contactInputActive = true;
+                                                            validaltion objj;
+                                                            chkvalidrollnumber = objj.is_valid_roll_number(rollnumber);
+
+                                                            if (chkvalidrollnumber)
+                                                            {
+                                                                Validrollnumberprint.setString("");
+                                                                rollInputActive = false;
+                                                                contactInputActive = true;
+                                                            }
+                                                            else
+                                                            {
+                                                                Validrollnumberprint.setString("Roll Number is not valid Enter Again..");
+                                                            }
                                                         }
                                                         else if (contactInputActive)
                                                         {
-                                                            contactInputActive = false;
-                                                            ageInputActive = true;
+                                                            validaltion objj;
+                                                            chkvalidcontact = objj.valid_contact(contact);
+                                                            if (chkvalidcontact)
+                                                            {
+                                                                Validcontctprint.setString("");
+
+                                                                contactInputActive = false;
+                                                                ageInputActive = true;
+                                                            }
+                                                            else
+                                                            {
+                                                                Validcontctprint.setString("Contact is not Valid Enter Again");
+                                                            }
                                                         }
-                                                        else
+                                                        else if(ageInputActive)
                                                         {
-                                                            Save_Check = true;
+                                                            validaltion objj;
+                                                            int x = stoi(age);
+                                                            chkvalidage = objj.valid_age(x);
+                                                            if (chkvalidage)
+                                                            {
+                                                                ValidAgeprint.setString("");
+                                                                Save_Check = true;
+                                                            }
+                                                            else
+                                                                ValidAgeprint.setString("Age is not Valid-Enter Again");
                                                         }
                                                     }
                                                 }
                                                 bool check_Fr_Save = false;
                                                 Add_Student.clear(Color::White); // Clear the window before drawing
 
-                                                text_Addstudent[0].setString("1 - Enter Student name");
-                                                text_Addstudent[1].setString("2 - Enter Student Roll number ");
-                                                text_Addstudent[2].setString("3 - Enter Student Contact Number");
-                                                text_Addstudent[3].setString("4 - Enter Student Age");
+                                                text_Addstudent[0].setString("1 - Enter Student name                        :");
+                                                text_Addstudent[1].setString("2 - Enter Student Roll number(17l-1234) :");
+                                                text_Addstudent[2].setString("3 - Enter Student Contact Number          :");
+                                                text_Addstudent[3].setString("4 - Enter Student Age                           :");
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
                                                 Add_Student.draw(sprite);
 
@@ -1159,6 +1222,12 @@ public:
                                                 {
                                                     Add_Student.draw(text_Addstudent[i]);
                                                 }
+                                                //-----------Validity---------------------
+                                                Add_Student.draw(Validrollnumberprint); // Roll NUmber 
+                                                Add_Student.draw(Validcontctprint); // Contact 
+                                                Add_Student.draw(ValidAgeprint); // Age 
+                                                //-----------------------------------------
+
                                                 Add_Student.draw(userInputTextname); // name 
                                                 Add_Student.draw(userInputTextrollno);  // roll number 
                                                 Add_Student.draw(userInputTextcont);  // contact
@@ -1202,6 +1271,15 @@ public:
                                             userinputR.setFont(fontt);
                                             userinputR.setPosition(600, 400);
                                             userinputR.setFillColor(Color::Black);
+
+                                            //-----------Valid RollNumber check----------------
+                                            Text Validrollnumberprint;
+                                            Validrollnumberprint.setFillColor(Color::Red);
+                                            Validrollnumberprint.setFont(font);
+                                            Validrollnumberprint.setCharacterSize(28);
+                                            Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
+                                            //-------------------------------------------------
+                                            int index = 0;
                                             while (Edit_detail.isOpen())
                                             {
                                                 Event editdetailevent;
@@ -1229,19 +1307,28 @@ public:
                                                             Edit_detail.draw(userinputR);
                                                         }
                                                     }
-
+                                                    bool check = false;
                                                     if (Keyboard::isKeyPressed(Keyboard::Enter))
                                                     {
-                                                        bool check = false;  // check for roll_Number 
-                                                        int index = 0;
-                                                        for (int i = 0; i < student_count_System; i++)
+                                                        //----------Validity Check---------------
+                                                        validaltion obj;
+                                                        bool checkvalidrollnum = obj.is_valid_roll_number(rollnumber__);
+                                                        if (checkvalidrollnum)
                                                         {
-                                                            if (students[i].get_roll_number() == rollnumber__)
+                                                            Validrollnumberprint.setString("");
+                                                            for (int i = 0; i < student_count_System; i++)
                                                             {
-                                                                check = true;
-                                                                index = i;
-                                                                break;
+                                                                if (students[i].get_roll_number() == rollnumber__)
+                                                                {
+                                                                    check = true;
+                                                                    index = i;
+                                                                    break;
+                                                                }
                                                             }
+                                                        }
+                                                        else
+                                                        {
+                                                            Validrollnumberprint.setString("Not Valid Try Again");
                                                         }
 
                                                         if (check)
@@ -1257,7 +1344,7 @@ public:
                                                             userInputTextname.setFillColor(Color::Black);
                                                             userInputTextname.setFont(font);
                                                             userInputTextname.setCharacterSize(50);
-                                                            userInputTextname.setPosition(20 + 300, 50 + 32 * 0);
+                                                            userInputTextname.setPosition(100 + 400, 400 + 50 * 0);
 
 
 
@@ -1265,13 +1352,13 @@ public:
                                                             userInputTextcont.setFillColor(Color::Black);
                                                             userInputTextcont.setFont(font);
                                                             userInputTextcont.setCharacterSize(50);
-                                                            userInputTextcont.setPosition(20 + 300, 50 + 32 * 1);
+                                                            userInputTextcont.setPosition(100 + 400, 400 + 50 * 1);
 
                                                             Text userInputTextage;
                                                             userInputTextage.setFillColor(Color::Black);
                                                             userInputTextage.setFont(font);
                                                             userInputTextage.setCharacterSize(50);
-                                                            userInputTextage.setPosition(20 + 300, 50 + 32 * 2);
+                                                            userInputTextage.setPosition(100 + 400, 400 + 50 * 2);
 
                                                             bool nameInputActive = true;
                                                             bool rollInputActive = false;
@@ -1281,7 +1368,7 @@ public:
                                                             Text messges_Saved_Sucesfully;
                                                             messges_Saved_Sucesfully.setFont(fontt);
                                                             messges_Saved_Sucesfully.setCharacterSize(50);
-                                                            messges_Saved_Sucesfully.setPosition(20, 32 * 5);
+                                                            messges_Saved_Sucesfully.setPosition(20, 400 + 50 * 5);
                                                             messges_Saved_Sucesfully.setFillColor(Color::Black);
                                                             while (EnterEditDetail.isOpen())
                                                             {
@@ -1369,15 +1456,20 @@ public:
                                                                     }
                                                                     if (evt.type == Event::KeyPressed && evt.key.code == Keyboard::Enter && Save_Check == true)
                                                                     {
-                                                                        int x = stoi(age);
+                                                                        int x = stoi(contact);
                                                                         students[index].set_age(x);
-                                                                        students[index].set_contact(contact);
+                                                                        students[index].set_contact(age);
                                                                         students[index].set_name(name);
                                                                         ofstream Filee_NamE("studentdata.txt", ios::trunc); // trunc remove all the existing data from the file 
+                                                                        ofstream Filee_NamE2("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file 
+
                                                                         for (int i = 0; i < student_count_System; i++)
                                                                         {
                                                                             filehandling obj("Studentdata.txt");
+                                                                            filehandling obj2("student_all_data.txt");
                                                                             obj.write_Student_data_into_File(students[i]);    // again write data into file after trunc
+                                                                            obj2.write_student_courses(students[i]);
+
                                                                         }
                                                                         messges_Saved_Sucesfully.setString("UPdtaed Sucessfully press ESC for Exit ");
                                                                     }
@@ -1393,7 +1485,7 @@ public:
                                                                 {
                                                                     text_Checker[i].setCharacterSize(50);
                                                                     text_Checker[i].setFillColor(Color::Black);
-                                                                    text_Checker[i].setPosition(20, 50 + 32 * i);
+                                                                    text_Checker[i].setPosition(20, 400 + 50 * i);
                                                                     text_Checker[i].setFont(fontt);
                                                                 }
                                                                 text_Checker[0].setString("Enter Edited Name :");
@@ -1408,12 +1500,12 @@ public:
                                                                 EnterEditDetail.display();
                                                             }
                                                         }
-
                                                     }
                                                 }
                                                 Edit_detail.clear(Color::White);
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
                                                 Edit_detail.draw(sprite);
+                                                Edit_detail.draw(Validrollnumberprint);
                                                 Edit_detail.draw(text);
                                                 Edit_detail.draw(userinputR);
                                                 Edit_detail.display();
@@ -1445,6 +1537,15 @@ public:
                                             userinput.setPosition(950, 400);//user
 
                                             userinput.setFont(fontt);
+
+
+                                            //-----------Valid RollNumber check----------------
+                                            Text Validrollnumberprint;
+                                            Validrollnumberprint.setFillColor(Color::Red);
+                                            Validrollnumberprint.setFont(fontt);
+                                            Validrollnumberprint.setCharacterSize(28);
+                                            Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
+                                            //-------------------------------------------------
 
                                             string roll_Number;
                                             int index = -1 ;
@@ -1481,105 +1582,69 @@ public:
                                                     }
                                                     if (obj.key.code == Keyboard::Enter && obj.type == Event::KeyReleased)
                                                     {
-                                                        cout << "Enter ";
-                                                        for (int i = 0; i < student_count_System; i++)
+                                                        validaltion objj;
+                                                        bool checkVaLiD = objj.is_valid_roll_number(roll_Number);
+
+
+                                                        if (checkVaLiD)
                                                         {
-                                                            if (students[i].get_roll_number() == roll_Number)
+                                                            Validrollnumberprint.setString("");
+                                                            for (int i = 0; i < student_count_System; i++)
                                                             {
-                                                                students[i].set_age(0);
-                                                                students[i].set_name("");
-                                                                students[i].set_rollnumber("");
-                                                                students[i].set_contact("");
-
-                                                                int y = students[i].get_course_count_student();
-
-                                                                // make coourses null 
-                                                                for (int j = 0; j < y; j++)
+                                                                if (students[i].get_roll_number() == roll_Number)
                                                                 {
-                                                                    students[i].add_course_student("");
-                                                                }
+                                                                    students[i].set_age(0);
+                                                                    students[i].set_name("");
+                                                                    students[i].set_rollnumber("");
+                                                                    students[i].set_contact("");
 
-                                                                // make attendence null 
-                                                                for (int j = 0; j < y; j++)
-                                                                {
-                                                                    students[i].mark_attendence('\0');
-                                                                }
+                                                                    int y = students[i].get_course_count_student();
 
-                                                                // make marks zero 
-                                                                for (int j = 0; j < y; j++)
-                                                                {
-                                                                    students[i].marks_assingn(0);
-                                                                }
-
-                                                                ofstream Filee_NamE("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file 
-
-                                                                for (int z = 0; z < student_count_System; z++)
-                                                                {
-                                                                    if (z != i)  // Check against the correct index
+                                                                    // make coourses null 
+                                                                    for (int j = 0; j < y; j++)
                                                                     {
-                                                                        filehandling fileObj("student_all_data.txt");
-                                                                        fileObj.write_student_courses(students[z]);    // again write data into file after trunc
+                                                                        students[i].add_course_student("");
                                                                     }
-                                                                }
 
-                                                                Conformation.setString("Remove Successfully. Press ESC To continue");
-                                                                student_count_System--;
-                                                                break;
+                                                                    // make attendence null 
+                                                                    for (int j = 0; j < y; j++)
+                                                                    {
+                                                                        students[i].mark_attendence('\0');
+                                                                    }
+
+                                                                    // make marks zero 
+                                                                    for (int j = 0; j < y; j++)
+                                                                    {
+                                                                        students[i].marks_assingn(0);
+                                                                    }
+
+                                                                    ofstream Filee_NamE("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file 
+                                                                    ofstream Filee_NamE2("studentdata.txt", ios::trunc); // trunc remove all the existing data from the file 
+
+                                                                    for (int z = 0; z < student_count_System; z++)
+                                                                    {
+                                                                        if (z != i)  // Check against the correct index
+                                                                        {
+                                                                            filehandling fileObj("student_all_data.txt");
+                                                                            filehandling filee("studentdata.txt");
+                                                                            fileObj.write_student_courses(students[z]);    // again write data into file after trunc
+                                                                            filee.write_Student_data_into_File(students[z]);
+                                                                        }
+                                                                    }
+                                                                    Conformation.setString("Remove Successfully. Press ESC To continue");
+                                                                    student_count_System--;
+                                                                    break;
+                                                                }
                                                             }
                                                         }
+                                                        else
+                                                            Validrollnumberprint.setString("Not Valid RollNumber input Enter(17l-1234)");
                                                     }
-                                                    //if (check_Ava)
-                                                        //{
-                                                        //    for (int i = 0; i < student_count_System; i++)
-                                                        //    {
-                                                        //        if (students[i].get_roll_number() == roll_Number)
-                                                        //        {
-                                                        //            students[i].set_age(0);
-                                                        //            students[i].set_name("");
-                                                        //            students[i].set_contact("");
-                                                        //            students[i].set_contact("");
-                                                        //            student_count_System--;  // descrse studenet count 
-                                                        //            break;
-                                                        //        }
-                                                        //    }
-                                                        //    ofstream Filee_NamE("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file 
-                                                        //    for (int i = 0; i < student_count_System; i++)
-                                                        //    {
-                                                        //        if (index != i)
-                                                        //        {
-                                                        //            filehandling obj("student_all_data.txt");
-                                                        //            obj.write_student_courses(students[i]);    // again write data into file after trunc
-                                                        //        }
-                                                        //    }
-                                                        //    string tempFilename = "temp.txt"; // Temporary file
-                                                        //    string filename = "studentdata.txt";
-                                                        //    ifstream inputFile(filename);
-                                                        //    ofstream tempFile(tempFilename);
-                                                        //    regex patternRegex(roll_Number);
-                                                        //    string line;
-                                                        //    while (getline(inputFile, line))
-                                                        //    {
-                                                        //        if (!regex_search(line, patternRegex))
-                                                        //        {
-                                                        //            tempFile << line << endl;
-                                                        //        }
-                                                        //    }
-                                                        //    inputFile.close();
-                                                        //    tempFile.close();
-                                                        //    if (remove(filename.c_str()) != 0) // delete org data 
-                                                        //    {
-                                                        //        cout << "Error\n" << endl;
-                                                        //        return;
-                                                        //    }
-                                                        //    if (rename(tempFilename.c_str(), filename.c_str()) != 0)
-                                                        //    {
-                                                        //        cout << "Error\n" << endl;
-                                                        //        return;
-                                                        //    }
                                                 }
                                                 removeStudent.clear(Color::White);
                                                 removeStudent.draw(sprite);
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
+                                                removeStudent.draw(Validrollnumberprint);
                                                 removeStudent.draw(Remove);
                                                 removeStudent.draw(Conformation);
                                                 removeStudent.draw(userinput);
@@ -1608,6 +1673,7 @@ public:
 
                         if (x == 1)
                         {
+
                             while (Register.isOpen())
                             {
                                 Event eaevent;
@@ -1680,11 +1746,22 @@ public:
                                         UserInput.setFillColor(Color::Black);
                                         Text t1, t2;
                                         t1.setFillColor(Color::Black);
-                                        t2.setFillColor(Color::Black);
-                                        t1.setPosition(200, 300); t2.setPosition(200, 300);
+                                        t2.setFillColor(Color::Red);
+                                        t1.setPosition(200, 300); t2.setPosition(200 * 6, 300);
                                         t1.setCharacterSize(50); t2.setCharacterSize(50);
                                         t1.setFont(font);
                                         t2.setFont(font);
+
+
+
+                                        //-----------Valid RollNumber check----------------
+                                        Text Validrollnumberprint;
+                                        Validrollnumberprint.setFillColor(Color::Red);
+                                        Validrollnumberprint.setFont(font);
+                                        Validrollnumberprint.setCharacterSize(28);
+                                        Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
+                                        //-------------------------------------------------
+
                                         while (Register_Student_menu.isOpen())
                                         {
                                             Event evnt;
@@ -1717,145 +1794,158 @@ public:
 
                                                 if (evnt.key.code == Keyboard::Enter)
                                                 {
-                                                    bool Chk_Ava = false;
-                                                    int index = 0;
-                                                    for (int i = 0; i < student_count_System; i++)
+                                                    validaltion obj; 
+                                                    bool checkVlID = obj.is_valid_roll_number(roll_Number);
+                                                    if (checkVlID)
                                                     {
-                                                        if (roll_Number == students[i].get_roll_number())
+
+                                                        Validrollnumberprint.setString("");
+                                                        bool Chk_Ava = false;
+                                                        int index = 0;
+                                                        for (int i = 0; i < student_count_System; i++)
                                                         {
-                                                            index = i;
-                                                            student_index = i;
-                                                            Chk_Ava = true;
-                                                            break;
-                                                        }
-                                                    }
-                                                    if (Chk_Ava)
-                                                    {
-                                                        t1.setString("Enter Code of course :");
-                                                        string code_OF_Course;
-                                                        Text usERinput;
-                                                        usERinput.setFillColor(Color::Black);
-                                                        usERinput.setCharacterSize(50);
-                                                        usERinput.setFont(font);
-                                                        usERinput.setPosition(800, 300);
-
-                                                        Text Escapemsg;
-                                                        Escapemsg.setFillColor(Color::Red);
-                                                        Escapemsg.setCharacterSize(50);
-                                                        Escapemsg.setFont(font);
-                                                        Escapemsg.setPosition(300, 700);
-
-                                                        Text No_Course_Exist;
-                                                        No_Course_Exist.setFillColor(Color::Black);
-                                                        No_Course_Exist.setCharacterSize(50);
-                                                        No_Course_Exist.setFont(font);
-                                                        No_Course_Exist.setPosition(300, 750);
-
-                                                        Text COnformation;
-                                                        COnformation.setFillColor(Color::Green);
-                                                        COnformation.setCharacterSize(50);
-                                                        COnformation.setFont(font);
-                                                        COnformation.setPosition(300, 600);
-
-                                                        Text max_Cap_Reached;
-                                                        max_Cap_Reached.setFillColor(Color::Red);
-                                                        max_Cap_Reached.setPosition(200, 800);
-                                                        max_Cap_Reached.setCharacterSize(50);
-                                                        max_Cap_Reached.setFont(font);
-
-                                                        Register_Student_menu.draw(t1);
-                                                        bool enterKeyPressed = false;
-                                                        RenderWindow entercodewindow(desktopMode, "ENter code");
-                                                        while (entercodewindow.isOpen())
-                                                        {
-                                                            Event evntforentercodewindow;
-                                                            while (entercodewindow.pollEvent(evntforentercodewindow))
+                                                            if (roll_Number == students[i].get_roll_number())
                                                             {
-                                                                if (evntforentercodewindow.type == Event::Closed)
-                                                                {
-                                                                    entercodewindow.close();
-                                                                }
-                                                                if (evntforentercodewindow.key.code == Keyboard::Escape)
-                                                                {
-                                                                    entercodewindow.close();
-                                                                }
-                                                                if (evntforentercodewindow.type == Event::TextEntered)
-                                                                {
-                                                                    if (evntforentercodewindow.text.unicode < 128 && evntforentercodewindow.text.unicode > 31)
-                                                                    {
-                                                                        code_OF_Course += evntforentercodewindow.text.unicode;
-                                                                        usERinput.setString(code_OF_Course);
-                                                                        entercodewindow.draw(usERinput);
-                                                                    }
-                                                                    else if (aevent.text.unicode == 8 && !code_OF_Course.empty()) // backspace
-                                                                    {
-                                                                        code_OF_Course.pop_back();
-                                                                        usERinput.setString(code_OF_Course);
-                                                                        entercodewindow.draw(usERinput);
-                                                                    }
-                                                                }
-                                                                bool check_course_avalibility = false;;
+                                                                index = i;
+                                                                student_index = i;
+                                                                Chk_Ava = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (Chk_Ava)
+                                                        {
 
-                                                                if (evntforentercodewindow.type == Event::KeyReleased && evntforentercodewindow.key.code == Keyboard::Enter) {
-                                                                    enterKeyPressed = true;
-                                                                    for (int i = 0; i < course_count_system; i++)
+                                                            t1.setString("Enter Code of course :");
+                                                            string code_OF_Course;
+                                                            Text usERinput;
+                                                            usERinput.setFillColor(Color::Black);
+                                                            usERinput.setCharacterSize(50);
+                                                            usERinput.setFont(font);
+                                                            usERinput.setPosition(800, 300);
+
+                                                            Text Escapemsg;
+                                                            Escapemsg.setFillColor(Color::Red);
+                                                            Escapemsg.setCharacterSize(50);
+                                                            Escapemsg.setFont(font);
+                                                            Escapemsg.setPosition(300, 700);
+
+                                                            Text No_Course_Exist;
+                                                            No_Course_Exist.setFillColor(Color::Black);
+                                                            No_Course_Exist.setCharacterSize(50);
+                                                            No_Course_Exist.setFont(font);
+                                                            No_Course_Exist.setPosition(300, 750);
+
+                                                            Text COnformation;
+                                                            COnformation.setFillColor(Color::Green);
+                                                            COnformation.setCharacterSize(50);
+                                                            COnformation.setFont(font);
+                                                            COnformation.setPosition(300, 600);
+
+                                                            Text max_Cap_Reached;
+                                                            max_Cap_Reached.setFillColor(Color::Red);
+                                                            max_Cap_Reached.setPosition(200, 800);
+                                                            max_Cap_Reached.setCharacterSize(50);
+                                                            max_Cap_Reached.setFont(font);
+
+                                                            Register_Student_menu.draw(t1);
+                                                            bool enterKeyPressed = false;
+                                                            RenderWindow entercodewindow(desktopMode, "ENter code");
+                                                            while (entercodewindow.isOpen())
+                                                            {
+                                                                Event evntforentercodewindow;
+                                                                while (entercodewindow.pollEvent(evntforentercodewindow))
+                                                                {
+                                                                    if (evntforentercodewindow.type == Event::Closed)
                                                                     {
-                                                                        if (courses[i].get_code() == code_OF_Course)
+                                                                        entercodewindow.close();
+                                                                    }
+                                                                    if (evntforentercodewindow.key.code == Keyboard::Escape)
+                                                                    {
+                                                                        entercodewindow.close();
+                                                                    }
+                                                                    if (evntforentercodewindow.type == Event::TextEntered)
+                                                                    {
+                                                                        if (evntforentercodewindow.text.unicode < 128 && evntforentercodewindow.text.unicode > 31)
                                                                         {
-                                                                            if (students[student_index].get_course_count_student() > 4)
-                                                                            {
-                                                                                max_Cap_Reached.setString("MAx course count reached ! Thank you");
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                students[student_index].add_course_student(courses[i].get_name());
-
-                                                                                COnformation.setString("Registered Sucessfylly");
-                                                                                Escapemsg.setString("Press Escape to countinue");
-                                                                                entercodewindow.draw(COnformation);
-                                                                                entercodewindow.draw(Escapemsg);
-                                                                                check_course_avalibility = true;
-                                                                                // write all data into file first delete data then write new data 
-                                                                                {
-                                                                                    ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
-
-                                                                                    filehandling obj("student_all_data.txt");
-                                                                                    for (int i = 0; i < student_count_System; i++)
-                                                                                    {
-                                                                                        obj.write_student_courses(students[i]);   // write student data with courses 
-                                                                                    }
-                                                                                }
-                                                                                break;
-                                                                            }
-
+                                                                            code_OF_Course += evntforentercodewindow.text.unicode;
+                                                                            usERinput.setString(code_OF_Course);
+                                                                            entercodewindow.draw(usERinput);
+                                                                        }
+                                                                        else if (aevent.text.unicode == 8 && !code_OF_Course.empty()) // backspace
+                                                                        {
+                                                                            code_OF_Course.pop_back();
+                                                                            usERinput.setString(code_OF_Course);
+                                                                            entercodewindow.draw(usERinput);
                                                                         }
                                                                     }
+                                                                    bool check_course_avalibility = false;;
+
+                                                                    if (evntforentercodewindow.type == Event::KeyReleased && evntforentercodewindow.key.code == Keyboard::Enter) {
+                                                                        enterKeyPressed = true;
+                                                                        for (int i = 0; i < course_count_system; i++)
+                                                                        {
+                                                                            if (courses[i].get_code() == code_OF_Course)
+                                                                            {
+                                                                                if (students[student_index].get_course_count_student() > 4)
+                                                                                {
+                                                                                    max_Cap_Reached.setString("MAx course count reached ! Thank you");
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    students[student_index].add_course_student(courses[i].get_name());
+
+                                                                                    COnformation.setString("Registered Sucessfylly");
+                                                                                    Escapemsg.setString("Press Escape to countinue");
+                                                                                    entercodewindow.draw(COnformation);
+                                                                                    entercodewindow.draw(Escapemsg);
+                                                                                    check_course_avalibility = true;
+                                                                                    // write all data into file first delete data then write new data 
+                                                                                    {
+                                                                                        ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
+
+                                                                                        filehandling obj("student_all_data.txt");
+                                                                                        for (int i = 0; i < student_count_System; i++)
+                                                                                        {
+                                                                                            obj.write_student_courses(students[i]);   // write student data with courses 
+                                                                                        }
+                                                                                    }
+                                                                                    break;
+                                                                                }
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    /*else
+                                                                    {
+                                                                        No_Course_Exist.setString("NO Course Exist with that Code number ");
+                                                                        Escapemsg.setString("Press Escape to countinue");
+                                                                        entercodewindow.draw(No_Course_Exist);
+                                                                        entercodewindow.draw(Escapemsg);
+                                                                    }*/
                                                                 }
-                                                                /*else
-                                                                {
-                                                                    No_Course_Exist.setString("NO Course Exist with that Code number ");
-                                                                    Escapemsg.setString("Press Escape to countinue");
-                                                                    entercodewindow.draw(No_Course_Exist);
-                                                                    entercodewindow.draw(Escapemsg);
-                                                                }*/
+                                                                entercodewindow.clear(Color::White);
+                                                                entercodewindow.draw(sprite);
+                                                                sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
+                                                                entercodewindow.draw(max_Cap_Reached);
+                                                                entercodewindow.draw(t1);
+                                                                entercodewindow.draw(COnformation);
+                                                                entercodewindow.draw(No_Course_Exist);
+                                                                entercodewindow.draw(usERinput);
+                                                                entercodewindow.draw(Escapemsg);
+                                                                entercodewindow.display();
+
                                                             }
-                                                            entercodewindow.clear(Color::White);
-                                                            entercodewindow.draw(sprite);
-                                                            sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
-                                                            entercodewindow.draw(max_Cap_Reached);
-                                                            entercodewindow.draw(t1);
-                                                            entercodewindow.draw(COnformation);
-                                                            entercodewindow.draw(No_Course_Exist);
-                                                            entercodewindow.draw(usERinput);
-                                                            entercodewindow.draw(Escapemsg);
-                                                            entercodewindow.display();
 
                                                         }
+                                                        else
+                                                        {
 
+                                                             t2.setString("No Student Exist...Try Again ");
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        t2.setString("No Student Exist...Try Again ");
+                                                        Validrollnumberprint.setString("Not-Valid Enter Again in that format(17l-0987)");
                                                     }
 
                                                 }
@@ -1863,6 +1953,7 @@ public:
                                             Register_Student_menu.clear(Color::White);
                                             Register_Student_menu.draw(sprite);
                                             sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
+                                            Register_Student_menu.draw(Validrollnumberprint);
                                             Register_Student_menu.draw(t2);
                                             Register_Student_menu.draw(text);
                                             Register_Student_menu.draw(UserInput);
@@ -1976,6 +2067,23 @@ public:
                                             UserInputR.setPosition(950, 400);
                                             UserInputR.setFillColor(Color::Black);
 
+                                            Text NoCourseOUtput;
+
+                                            NoCourseOUtput.setFont(font);
+                                            NoCourseOUtput.setCharacterSize(50);
+                                            NoCourseOUtput.setPosition(950, 900);
+                                            NoCourseOUtput.setFillColor(Color::Red);
+
+
+                                            //-----------Valid RollNumber check----------------
+                                            Text Validrollnumberprint;
+                                            Validrollnumberprint.setFillColor(Color::Red);
+                                            Validrollnumberprint.setFont(font);
+                                            Validrollnumberprint.setCharacterSize(28);
+                                            Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
+                                            //-------------------------------------------------
+
+
                                             Text Attendence[5];
                                             bool checkkk = true;
                                             while (Enter_Attendence.isOpen())
@@ -2010,14 +2118,24 @@ public:
                                                     int index_ofSTu = 0;
                                                     if (evnt.key.code == Keyboard::Enter)
                                                     {
-                                                        for (int i = 0; i < student_count_System; i++)
+                                                        validaltion obj;
+                                                        bool cheking = obj.is_valid_roll_number(roll_NumberR);
+                                                        if (cheking)
                                                         {
-                                                            if (roll_NumberR == students[i].get_roll_number())
+                                                            Validrollnumberprint.setString("");
+
+                                                            for (int i = 0; i < student_count_System; i++)
                                                             {
-                                                                index_ofSTu = i;
-                                                                chk = true;
+                                                                if (roll_NumberR == students[i].get_roll_number())
+                                                                {
+                                                                    index_ofSTu = i;
+                                                                    chk = true;
+                                                                }
                                                             }
                                                         }
+                                                        else
+                                                            Validrollnumberprint.setString("Not Valid-Enter in that Order(17l-1234)");
+                                                          
                                                     }
                                                     bool checkforenter = false;
                                                     if (chk)
@@ -2107,11 +2225,16 @@ public:
 
                                                         }
                                                         else
-                                                            cout << "\n Student has no courses \n";
+                                                        {
+                                                            NoCourseOUtput.setString("Student has no Courses ");
+                                                        }
+                                                           
                                                     }
                                                 }
                                                 Enter_Attendence.clear(Color::White);
+                                                Enter_Attendence.draw(Validrollnumberprint);
                                                 Enter_Attendence.draw(sprite);
+                                                Enter_Attendence.draw(NoCourseOUtput);
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
                                                 Enter_Attendence.draw(UserInputR);
                                                 Enter_Attendence.draw(text);
@@ -2137,6 +2260,7 @@ public:
                                 Attendence.display();
                             }
                         }
+                        // Marks of students 
                         if (x == 3)
                         {
                             while (Marks.isOpen())
@@ -2217,6 +2341,26 @@ public:
                                             UserInputR.setPosition(950, 400);
                                             UserInputR.setFillColor(Color::Black);
 
+                                            Text NotExist;
+                                            NotExist.setFont(font);
+                                            NotExist.setCharacterSize(50);
+                                            NotExist.setPosition(950, 800);
+                                            NotExist.setFillColor(Color::Red);
+
+                                            Text Nocourse;
+                                            Nocourse.setFont(font);
+                                            Nocourse.setCharacterSize(50);
+                                            Nocourse.setPosition(950, 700);
+                                            Nocourse.setFillColor(Color::Red);
+
+
+                                            //-----------Valid RollNumber check----------------
+                                            Text Validrollnumberprint;
+                                            Validrollnumberprint.setFillColor(Color::Red);
+                                            Validrollnumberprint.setFont(font);
+                                            Validrollnumberprint.setCharacterSize(28);
+                                            Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
+                                            //-------------------------------------------------
 
 
                                             Text Marksofstudent[5];
@@ -2254,135 +2398,150 @@ public:
 
                                                     if (evnt.key.code == Keyboard::Enter)
                                                     {
-                                                        for (int i = 0; i < student_count_System; i++)
+                                                        validaltion obj;
+                                                        bool checking = obj.is_valid_roll_number(roll_NumberR);
+                                                        if (checking)
                                                         {
-                                                            if (roll_NumberR == students[i].get_roll_number())
+                                                            Validrollnumberprint.setString("");
+                                                            for (int i = 0; i < student_count_System; i++)
                                                             {
-                                                                index_ofSTu = i;
-                                                                chk = true;
-                                                                break;
-                                                            }
-                                                        }
-                                                        if (chk)
-                                                        {
-                                                            bool ENtermarksCheck = false;
-                                                            string MArKsS;
-                                                            int checkforx = 0;
-
-                                                            Text UserInputforMarks;
-                                                            UserInputforMarks.setFont(font);
-                                                            UserInputforMarks.setCharacterSize(50);
-                                                            UserInputforMarks.setFillColor(Color::Black);
-
-                                                            int x = students[index_ofSTu].get_course_count_student();
-                                                            if (x > 0)
-                                                            {
-                                                                RenderWindow SubWindowENterMarks(desktopMode, "ENter MArks of STudent");
-                                                                for (int i = 0; i < x; i++)
+                                                                if (roll_NumberR == students[i].get_roll_number())
                                                                 {
-                                                                    Marksofstudent[i].setFillColor(Color::Black);
-                                                                    Marksofstudent[i].setCharacterSize(50);
-                                                                    Marksofstudent[i].setFont(font);
-                                                                    Marksofstudent[i].setPosition(20, 300 + 60 * i);
-                                                                    Marksofstudent[i].setString("Enter Marks for " + students[index_ofSTu].get_course_student(i) + ":");
+                                                                    index_ofSTu = i;
+                                                                    chk = true;
+                                                                    break;
                                                                 }
-                                                                int p = 0;
-                                                                bool enterKeyPressed = false;
-                                                                while (SubWindowENterMarks.isOpen())
+                                                            }
+                                                            if (chk)
+                                                            {
+                                                                bool ENtermarksCheck = false;
+                                                                string MArKsS;
+                                                                int checkforx = 0;
+
+                                                                Text UserInputforMarks;
+                                                                UserInputforMarks.setFont(font);
+                                                                UserInputforMarks.setCharacterSize(50);
+                                                                UserInputforMarks.setFillColor(Color::Black);
+
+                                                                int x = students[index_ofSTu].get_course_count_student();
+                                                                if (x > 0)
                                                                 {
-                                                                    Event EnterMarksEVENT;
-                                                                    while (SubWindowENterMarks.pollEvent(EnterMarksEVENT))
-                                                                    {
-                                                                        if (EnterMarksEVENT.type == Event::Closed)
-                                                                        {
-                                                                            SubWindowENterMarks.close();
-                                                                        }
-                                                                        if (EnterMarksEVENT.key.code == Keyboard::Escape)
-                                                                        {
-                                                                            SubWindowENterMarks.close();
-                                                                        }
-                                                                        if (EnterMarksEVENT.type == Event::TextEntered)
-                                                                        {
-                                                                            if (EnterMarksEVENT.text.unicode < 128 && EnterMarksEVENT.text.unicode > 31)
-                                                                            {
-                                                                                if (checkforx == 0 && checkforx < x)
-                                                                                {
-                                                                                    UserInputforMarks.setPosition(450 + 170, 300 + 100 * 0);
-                                                                                    MArKsS += EnterMarksEVENT.text.unicode;
-                                                                                    UserInputforMarks.setString(MArKsS);
-                                                                                    ENtermarksCheck = true;
-                                                                                }
-                                                                                if (checkforx == 1 && checkforx < x)
-                                                                                {
-                                                                                    UserInputforMarks.setPosition(450 + 170, 300 + 100 * 1);
-                                                                                    MArKsS += EnterMarksEVENT.text.unicode;
-                                                                                    UserInputforMarks.setString(MArKsS);
-                                                                                    ENtermarksCheck = true;
-
-                                                                                }
-                                                                                if (checkforx == 2 && checkforx < x)
-                                                                                {
-                                                                                    UserInputforMarks.setPosition(450 + 170, 300 + 100 * 2);
-                                                                                    MArKsS += EnterMarksEVENT.text.unicode;
-                                                                                    UserInputforMarks.setString(MArKsS);
-                                                                                    ENtermarksCheck = true;
-
-                                                                                }
-                                                                                if (checkforx == 3 && checkforx < x)
-                                                                                {
-                                                                                    UserInputforMarks.setPosition(450 + 170, 300 + 100 * 3);
-                                                                                    MArKsS += EnterMarksEVENT.text.unicode;
-                                                                                    UserInputforMarks.setString(MArKsS);
-                                                                                    ENtermarksCheck = true;
-
-                                                                                }
-                                                                                if (checkforx == 4 && checkforx < x)
-                                                                                {
-                                                                                    UserInputforMarks.setPosition(950 + 170, 300 * 100 * 4);
-                                                                                    MArKsS += EnterMarksEVENT.text.unicode;
-                                                                                    UserInputforMarks.setString(MArKsS);
-                                                                                    ENtermarksCheck = true;
-
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                        // yaha i thik s
-                                                                        if (EnterMarksEVENT.key.code == Keyboard::Enter && !enterKeyPressed && ENtermarksCheck)
-                                                                        {
-                                                                            int MyINT = stoi(MArKsS);
-                                                                            students[index_ofSTu].marks_assingn(MyINT);
-                                                                            checkforx++;
-                                                                            MArKsS = "";
-
-                                                                            enterKeyPressed = true;
-                                                                        }
-                                                                        else if (!Keyboard::isKeyPressed(Keyboard::Enter))
-                                                                        {
-                                                                            enterKeyPressed = false;
-                                                                        }
-                                                                        if (checkforx == x && checkkk)
-                                                                        {
-                                                                            checkkk = false;
-                                                                            text2.setString("Entered Succesfully \n Press Escape To Countinue :");
-                                                                            filehandling obj("students_marks.txt");
-                                                                            obj.write_marks(students[index_ofSTu], x);
-                                                                        }
-
-                                                                    }
-                                                                    SubWindowENterMarks.clear(Color::White);
-
-                                                                    SubWindowENterMarks.draw(sprite);
-                                                                    sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
+                                                                    RenderWindow SubWindowENterMarks(desktopMode, "ENter MArks of STudent");
                                                                     for (int i = 0; i < x; i++)
                                                                     {
-                                                                        SubWindowENterMarks.draw(Marksofstudent[i]);
+                                                                        Marksofstudent[i].setFillColor(Color::Black);
+                                                                        Marksofstudent[i].setCharacterSize(50);
+                                                                        Marksofstudent[i].setFont(font);
+                                                                        Marksofstudent[i].setPosition(20, 300 + 60 * i);
+                                                                        Marksofstudent[i].setString("Enter Marks for " + students[index_ofSTu].get_course_student(i) + ":");
                                                                     }
-                                                                    SubWindowENterMarks.draw(text2);
-                                                                    SubWindowENterMarks.draw(UserInputforMarks);
-                                                                    SubWindowENterMarks.display();
+                                                                    int p = 0;
+                                                                    bool enterKeyPressed = false;
+                                                                    while (SubWindowENterMarks.isOpen())
+                                                                    {
+                                                                        Event EnterMarksEVENT;
+                                                                        while (SubWindowENterMarks.pollEvent(EnterMarksEVENT))
+                                                                        {
+                                                                            if (EnterMarksEVENT.type == Event::Closed)
+                                                                            {
+                                                                                SubWindowENterMarks.close();
+                                                                            }
+                                                                            if (EnterMarksEVENT.key.code == Keyboard::Escape)
+                                                                            {
+                                                                                SubWindowENterMarks.close();
+                                                                            }
+                                                                            if (EnterMarksEVENT.type == Event::TextEntered)
+                                                                            {
+                                                                                if (EnterMarksEVENT.text.unicode < 128 && EnterMarksEVENT.text.unicode > 31)
+                                                                                {
+                                                                                    if (checkforx == 0 && checkforx < x)
+                                                                                    {
+                                                                                        UserInputforMarks.setPosition(450 + 170, 300 + 100 * 0);
+                                                                                        MArKsS += EnterMarksEVENT.text.unicode;
+                                                                                        UserInputforMarks.setString(MArKsS);
+                                                                                        ENtermarksCheck = true;
+                                                                                    }
+                                                                                    if (checkforx == 1 && checkforx < x)
+                                                                                    {
+                                                                                        UserInputforMarks.setPosition(450 + 170, 300 + 100 * 1);
+                                                                                        MArKsS += EnterMarksEVENT.text.unicode;
+                                                                                        UserInputforMarks.setString(MArKsS);
+                                                                                        ENtermarksCheck = true;
+
+                                                                                    }
+                                                                                    if (checkforx == 2 && checkforx < x)
+                                                                                    {
+                                                                                        UserInputforMarks.setPosition(450 + 170, 300 + 100 * 2);
+                                                                                        MArKsS += EnterMarksEVENT.text.unicode;
+                                                                                        UserInputforMarks.setString(MArKsS);
+                                                                                        ENtermarksCheck = true;
+
+                                                                                    }
+                                                                                    if (checkforx == 3 && checkforx < x)
+                                                                                    {
+                                                                                        UserInputforMarks.setPosition(450 + 170, 300 + 100 * 3);
+                                                                                        MArKsS += EnterMarksEVENT.text.unicode;
+                                                                                        UserInputforMarks.setString(MArKsS);
+                                                                                        ENtermarksCheck = true;
+
+                                                                                    }
+                                                                                    if (checkforx == 4 && checkforx < x)
+                                                                                    {
+                                                                                        UserInputforMarks.setPosition(950 + 170, 300 * 100 * 4);
+                                                                                        MArKsS += EnterMarksEVENT.text.unicode;
+                                                                                        UserInputforMarks.setString(MArKsS);
+                                                                                        ENtermarksCheck = true;
+
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            // yaha i thik s
+                                                                            if (EnterMarksEVENT.key.code == Keyboard::Enter && !enterKeyPressed && ENtermarksCheck)
+                                                                            {
+                                                                                int MyINT = stoi(MArKsS);
+                                                                                students[index_ofSTu].marks_assingn(MyINT);
+                                                                                checkforx++;
+                                                                                MArKsS = "";
+
+                                                                                enterKeyPressed = true;
+                                                                            }
+                                                                            else if (!Keyboard::isKeyPressed(Keyboard::Enter))
+                                                                            {
+                                                                                enterKeyPressed = false;
+                                                                            }
+                                                                            if (checkforx == x && checkkk)
+                                                                            {
+                                                                                checkkk = false;
+                                                                                text2.setString("Entered Succesfully \n Press Escape To Countinue :");
+                                                                                filehandling obj("students_marks.txt");
+                                                                                obj.write_marks(students[index_ofSTu], x);
+                                                                            }
+
+                                                                        }
+                                                                        SubWindowENterMarks.clear(Color::White);
+
+                                                                        SubWindowENterMarks.draw(sprite);
+                                                                        sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
+                                                                        for (int i = 0; i < x; i++)
+                                                                        {
+                                                                            SubWindowENterMarks.draw(Marksofstudent[i]);
+                                                                        }
+                                                                        SubWindowENterMarks.draw(text2);
+                                                                        SubWindowENterMarks.draw(UserInputforMarks);
+                                                                        SubWindowENterMarks.display();
+                                                                    }
                                                                 }
+                                                                else
+                                                                    Nocourse.setString("Student has no Course");
+                                                            }
+                                                            else
+                                                            {
+                                                                cout << "NO student exit ";
+                                                                NotExist.setString("Student Not Exist ..Try Again");
                                                             }
                                                         }
+                                                        else
+                                                            Validrollnumberprint.setString("Not Valid ENter in that Format(22l-1234)");
                                                     }
                                                     bool checkforenter = false;
                                                 }
@@ -2390,6 +2549,9 @@ public:
                                                 Enter_MARKS.draw(sprite);
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
                                                 Enter_MARKS.draw(UserInputR);
+                                                Enter_MARKS.draw(Nocourse);
+                                                Enter_MARKS.draw(NotExist);
+                                                Enter_MARKS.draw(Validrollnumberprint);
                                                 Enter_MARKS.draw(text);
                                                 Enter_MARKS.display();
                                             }
@@ -2412,6 +2574,7 @@ public:
                                 Marks.display();
                             }
                         }
+                        //--------Withdraw the course-------------
                         if (x == 4)
                         {
                             while (Withdraw.isOpen())
@@ -2445,6 +2608,15 @@ public:
                                             UserInputR.setCharacterSize(50);
                                             UserInputR.setPosition(1050 + 250, 400);
                                             UserInputR.setFillColor(Color::Black);
+
+
+                                            //-----------Valid RollNumber check----------------
+                                            Text Validrollnumberprint;
+                                            Validrollnumberprint.setFillColor(Color::Red);
+                                            Validrollnumberprint.setFont(font);
+                                            Validrollnumberprint.setCharacterSize(28);
+                                            Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
+                                            //-------------------------------------------------
                                             Text textTODisplay[5];
 
                                             while (Display_Enroll_Courses.isOpen())
@@ -2477,22 +2649,32 @@ public:
                                                 }
                                                 Display_Enroll_Courses.clear(Color::White);
                                                 int StudentcourseIndex = 0;
-                                                if(Enroll_Course_Event.key.code == Keyboard::Enter )
+                                                if(Enroll_Course_Event.key.code == Keyboard::Enter)
                                                 {
-                                                    for (int i = 0; i < student_count_System; i++)
+                                                    validaltion obj;
+                                                    bool CheKinG = obj.is_valid_roll_number(roll_Number);
+                                                    if (CheKinG)
                                                     {
-                                                        if (roll_Number == students[i].get_roll_number())
+                                                        Validrollnumberprint.setString("");
+                                                        for (int i = 0; i < student_count_System; i++)
                                                         {
-                                                            StudentcourseIndex = students[i].get_course_count_student();
-                                                            students[i].display_student(Display_Enroll_Courses , textTODisplay);
-                                                            break;
+                                                            if (roll_Number == students[i].get_roll_number())
+                                                            {
+                                                                StudentcourseIndex = students[i].get_course_count_student();
+                                                                students[i].display_student(Display_Enroll_Courses , textTODisplay);
+                                                                break;
+                                                            }
                                                         }
                                                     }
+                                                    else
+                                                    {
+                                                        Validrollnumberprint.setString("Not Valid Try Again use that format(22l-0987)");
+                                                    }
                                                 }
-                                    
                                                 Display_Enroll_Courses.draw(sprite);
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
                                                 Display_Enroll_Courses.draw(text);
+                                                Display_Enroll_Courses.draw(Validrollnumberprint);
                                                 Display_Enroll_Courses.draw(UserInputR);
                                                 Display_Enroll_Courses.display();
                                             }
@@ -2510,7 +2692,7 @@ public:
                                             text.setFillColor(Color::Black);
                                             text.setString("ENter ROll number of student to Drop Course:");
 
-                                            string roll_Number;
+                                            string roll_NumberRR;
                                             Text UserInputR;
                                             UserInputR.setFont(font);
                                             UserInputR.setCharacterSize(50);
@@ -2534,6 +2716,24 @@ public:
                                             Withdraw_Succesfully.setCharacterSize(50);
                                             Withdraw_Succesfully.setPosition(0, 300);
                                             Withdraw_Succesfully.setFillColor(Color::Black);
+
+                                            //-----------Valid RollNumber check----------------
+                                            Text Validrollnumberprint;
+                                            Validrollnumberprint.setFillColor(Color::Red);
+                                            Validrollnumberprint.setFont(font);
+                                            Validrollnumberprint.setCharacterSize(28);
+                                            Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
+
+
+                                            Text ValidCourseprint;
+                                            ValidCourseprint.setFillColor(Color::Red);
+                                            ValidCourseprint.setFont(font);
+                                            ValidCourseprint.setCharacterSize(28);
+                                            ValidCourseprint.setPosition(70, 300 + 2 * 100 + 60);
+
+                                            //-------------------------------------------------
+
+
                                             bool Rollnumbercheck = true;
                                             bool coursecheck = false;
                                             string courseCodename;
@@ -2557,48 +2757,63 @@ public:
                                                     if (Withdraw_Course_Event.type == Event::TextEntered)
                                                     {
                                                         if (Withdraw_Course_Event.text.unicode < 128 && Withdraw_Course_Event.text.unicode > 31)
-                                                        {
+                                                        {   
                                                             if (Rollnumbercheck)
                                                             {
-                                                                roll_Number += Withdraw_Course_Event.text.unicode;
-                                                                UserInputR.setString(roll_Number);
-                                                            }
-                                                            else if(Rollnumbercheck && aevent.text.unicode == 8 && !roll_Number.empty()) // backspace
-                                                            {
-                                                                roll_Number.pop_back();
-                                                                UserInputR.setString(roll_Number);
-                                                                Withdar_Course.draw(UserInputR);
+                                                                if (Withdraw_Course_Event.text.unicode == 8 && !roll_NumberRR.empty()) // Changed from Keyboard::Key::BackSpace to 8
+                                                                {
+                                                                    
+                                                                    roll_NumberRR.pop_back();
+                                                                    UserInputR.setString(roll_NumberRR);
+                                                                    Withdar_Course.draw(UserInputR);
+                                                                }
+                                                                else
+                                                                {
+                                                                    roll_NumberRR += Withdraw_Course_Event.text.unicode;
+                                                                    UserInputR.setString(roll_NumberRR);
+                                                                }
+
                                                             }
                                                             if (coursecheck)
                                                             {
-                                                                courseCodename += Withdraw_Course_Event.text.unicode;
-                                                                UserInput2.setString(courseCodename);  // take code of course 
-                                                            }
-                                                            else if (Rollnumbercheck && aevent.text.unicode == 8 && !courseCodename.empty()) // backspace
-                                                            {
-                                                                courseCodename.pop_back();
-                                                                UserInput2.setString(courseCodename);
-                                                                Withdar_Course.draw(UserInput2);
+                                                                if (Withdraw_Course_Event.text.unicode == 8 && !courseCodename.empty()) // Changed from Keyboard::Key::BackSpace to 8
+                                                                {
+                                                                    courseCodename.pop_back();
+                                                                    UserInput2.setString(courseCodename);
+                                                                    Withdar_Course.draw(UserInput2);
+                                                                }
+                                                                else
+                                                                {
+                                                                    courseCodename += Withdraw_Course_Event.text.unicode;
+                                                                    UserInput2.setString(courseCodename);
+                                                                }
                                                             }
                                                         }
                                                     }
                                                     if (Withdraw_Course_Event.key.code == Keyboard::Enter && !enterKeyPressed && Rollnumbercheck)
                                                     {
+
+                                                        validaltion obj;
+                                                        bool cheking = obj.is_valid_roll_number(roll_NumberRR);
+                                                        if (cheking)
                                                         {
+                                                            Validrollnumberprint.setString("");
                                                             Rollnumbercheck = false;
                                                             coursecheck = true;
-                                                        }
-
-                                                        enterKeyPressed = true;
-                                                        for (int i = 0; i < student_count_System; i++)
-                                                        {
-                                                            if (students[i].get_roll_number() == roll_Number)
+                                                            for (int i = 0; i < student_count_System; i++)
                                                             {
-                                                                S_index = i;
-                                                               
-                                                                courseEnter.setString("Enter Course Name Of student:");
-                                                                break;
+                                                                if (students[i].get_roll_number() == roll_NumberRR)
+                                                                {
+                                                                    S_index = i;
+
+                                                                    courseEnter.setString("Enter Course Name Of student:");
+                                                                    break;
+                                                                }
                                                             }
+                                                        }
+                                                        else
+                                                        {
+                                                           Validrollnumberprint.setString("Try Again NOT valid(17l-1234)");
                                                         }
                                                     }
                                                     bool withdraw_Check = false;
@@ -2606,22 +2821,30 @@ public:
                                                     {
                                                         if (Withdraw_Course_Event.key.code == Keyboard::Enter && enterKeyPressed && coursecheck && tempcheck)
                                                         {
-                                                            cout << "Enter ";
-                                                            for (int j = 0; j < 5; j++)  //max 5 courses 
+                                                            validaltion obj;
+                                                            bool checking2 = obj.chk_valid_course_code(courseCodename);
+                                                            if (checking2)
                                                             {
-                                                                if (students[S_index].get_course_student(j) == courseCodename) // ROLLNUMBER ACT AS A COURSE NAME HERE 
+                                                                for (int j = 0; j < 5; j++)  //max 5 courses 
                                                                 {
-                                                                    students[S_index].withdraw_courses(courseCodename);
-                                                                    ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
-
-                                                                    filehandling obj("student_all_data.txt");
-                                                                    for (int i = 0; i < student_count_System; i++)
+                                                                    if (students[S_index].get_course_student(j) == courseCodename) // ROLLNUMBER ACT AS A COURSE NAME HERE 
                                                                     {
-                                                                        obj.write_student_courses(students[i]);   // write student data with courses 
+                                                                        students[S_index].withdraw_courses(courseCodename);
+                                                                        ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
+
+                                                                        filehandling obj("student_all_data.txt");
+                                                                        for (int i = 0; i < student_count_System; i++)
+                                                                        {
+                                                                            obj.write_student_courses(students[i]);   // write student data with courses 
+                                                                        }
+                                                                        withdraw_Check = true;
+                                                                        break;
                                                                     }
-                                                                    withdraw_Check = true;
-                                                                    break;
                                                                 }
+                                                            }
+                                                            else
+                                                            {
+                                                                ValidCourseprint.setString("Not Valid COurse Code Try AGain (AB1234)");
                                                             }
                                                         }
                                                         if (withdraw_Check)
@@ -2637,6 +2860,8 @@ public:
                                                 Withdar_Course.clear(Color::White);
                                                 Withdar_Course.draw(sprite);
                                                 sprite.setScale(newSize.x / sprite.getLocalBounds().width, newSize.y / sprite.getLocalBounds().height);
+                                                Withdar_Course.draw(ValidCourseprint);
+                                                Withdar_Course.draw(Validrollnumberprint);
                                                 Withdar_Course.draw(Withdraw_Succesfully);
                                                 Withdar_Course.draw(courseEnter);
                                                 Withdar_Course.draw(text);
