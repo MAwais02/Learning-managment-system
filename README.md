@@ -1,13 +1,9 @@
-# Learning-managment-system
-Just made this LMS system It is Console based which ask you for 
-1- Enroll a student
-2- Course Registration
-3- Attendance
-4- Marks
-5- Course Withdraw
-6- Exit
-After selecting it will again show sub menu what You want to do 
+# GUI Learning-managment-system using SFML
 
-*To Run this project*
-You need any c++ code extension 
-The code is completely weitten in c++ using Object Oriented Programming Concepts 
+This Project is 100% made in c++ with the Concept of SFML and Object Oriented Programming 
+To Run this project follow these steps:
+---Install Any c++ IDE 
+---Setup SFML on it You Can download 2022 latest Version from that link ->> https://www.sfml-dev.org/download.php
+
+----------After setting up the SFML and IDE Run the code------------
+For Authentification ENter random ROll numbers into Authentification file so that you can access the functionality of code 
