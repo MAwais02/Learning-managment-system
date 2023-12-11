@@ -312,12 +312,9 @@ public:
     {
         if (student_Course_count < capacity)
         {
-            students[student_Course_count++] = student;
+             students[student_Course_count] = student;
         }
-        else
-        {
-            cout << "Max capacity reached \n";
-        }
+        student_Course_count++;
     }
     void removeStudent(student* student)
     {
@@ -442,6 +439,22 @@ public:
         {
             cout << "File is not opening -- try Again !" << endl;
         }
+    }
+    void write_Student_into_Course(student& obj)
+    {
+        outFile.open(fileName, ios::app);
+        {
+            if (outFile.is_open())
+            {
+                outFile << obj.get_name() << "    ";
+                outFile << obj.get_roll_number() << "    ";
+                outFile << obj.get_age() << "    ";
+                outFile << obj.get_contact() << " ";
+                outFile << "\n";
+                outFile.close();
+            }
+        }
+
     }
     void write_student_courses(student& obj)
     {
@@ -786,11 +799,11 @@ public:
     }
     void displayCourseSubMenu(RenderWindow& Subwindow)
     {
-        Text menuItems[5];
+        Text menuItems[3];
 
         Font font;
         font.loadFromFile("arial.ttf");
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < 3; ++i)
         {
             menuItems[i].setFont(font);
             menuItems[i].setCharacterSize(50);
@@ -798,11 +811,9 @@ public:
         }
         menuItems[0].setString("1 - Avalible Course");
         menuItems[1].setString("2 - Register Course");
-        menuItems[2].setString("3 - Add student into Course");
-        menuItems[3].setString("4 - Remove Student From COurse");
-        menuItems[4].setString("5 - Back ");
+        menuItems[2].setString("5 - Back ");
 
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < 3; ++i)
         {
             menuItems[i].setPosition(50, 300 + i * 100);
         }
