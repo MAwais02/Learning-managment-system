@@ -365,6 +365,12 @@ void System::performMainMenuAction2()
                                         ValidAgeprint.setCharacterSize(28);
                                         ValidAgeprint.setPosition(1100, 300 + 3 * 100);
 
+                                        Text AvaliableROLLNUMBER;
+                                        AvaliableROLLNUMBER.setFillColor(Color::Red);
+                                        AvaliableROLLNUMBER.setFont(font);
+                                        AvaliableROLLNUMBER.setCharacterSize(28);
+                                        AvaliableROLLNUMBER.setPosition(1200, 300 + 3 * 100);
+
                                         Text Validcontctprint;
                                         Validcontctprint.setFillColor(Color::Red);
                                         Validcontctprint.setFont(font);
@@ -470,14 +476,29 @@ void System::performMainMenuAction2()
                                                     }
                                                     else if (rollInputActive)
                                                     {
+                                                        bool check2 = true;
+
                                                         validaltion objj;
                                                         chkvalidrollnumber = objj.is_valid_roll_number(rollnumber);
-
                                                         if (chkvalidrollnumber)
                                                         {
-                                                            Validrollnumberprint.setString("");
-                                                            rollInputActive = false;
-                                                            contactInputActive = true;
+                                                            for (int i = 0; i < student_count_System; i++)
+                                                            {
+                                                                if (rollnumber == students[i].get_roll_number())
+                                                                {
+                                                                    AvaliableROLLNUMBER.setString("STudent roll number already exist ");
+                                                                    check2 = false;
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if (check2)
+                                                            {
+                                                                AvaliableROLLNUMBER.setString("");
+                                                                Validrollnumberprint.setString("");
+                                                                rollInputActive = false;
+                                                                contactInputActive = true;
+                                                            }
                                                         }
                                                         else
                                                         {
@@ -539,7 +560,7 @@ void System::performMainMenuAction2()
                                             Add_Student.draw(userInputTextrollno);  // roll number 
                                             Add_Student.draw(userInputTextcont);  // contact
                                             Add_Student.draw(userInputTextage);   // age
-
+                                            Add_Student.draw(AvaliableROLLNUMBER);
                                             if (Save_Check)
                                             {
                                                 student obj;
@@ -2209,8 +2230,15 @@ void System::performMainMenuAction2()
                                         Text Withdraw_Succesfully;
                                         Withdraw_Succesfully.setFont(font);
                                         Withdraw_Succesfully.setCharacterSize(50);
-                                        Withdraw_Succesfully.setPosition(0, 300);
-                                        Withdraw_Succesfully.setFillColor(Color::Black);
+                                        Withdraw_Succesfully.setPosition(1050 + 250, 800);
+                                        Withdraw_Succesfully.setFillColor(Color::Green);
+
+
+                                        Text NOCOURSE;
+                                        NOCOURSE.setFont(font);
+                                        NOCOURSE.setCharacterSize(50);
+                                        NOCOURSE.setPosition(1050 , 700);
+                                        NOCOURSE.setFillColor(Color::Red);
 
                                         //-----------Valid RollNumber check----------------
                                         Text Validrollnumberprint;
@@ -2219,6 +2247,11 @@ void System::performMainMenuAction2()
                                         Validrollnumberprint.setCharacterSize(28);
                                         Validrollnumberprint.setPosition(70, 300 + 1 * 100 + 60);
 
+                                        Text ROLLNUMBEREXISTORNNOT;
+                                        ROLLNUMBEREXISTORNNOT.setFillColor(Color::Red);
+                                        ROLLNUMBEREXISTORNNOT.setFont(font);
+                                        ROLLNUMBEREXISTORNNOT.setCharacterSize(28);
+                                        ROLLNUMBEREXISTORNNOT.setPosition(170, 300 + 1 * 100 + 60);
 
                                         Text ValidCourseprint;
                                         ValidCourseprint.setFillColor(Color::Red);
@@ -2287,7 +2320,7 @@ void System::performMainMenuAction2()
                                                 }
                                                 if (Withdraw_Course_Event.key.code == Keyboard::Enter && !enterKeyPressed && Rollnumbercheck)
                                                 {
-
+                                                    bool check3 = false;
                                                     validaltion obj;
                                                     bool cheking = obj.is_valid_roll_number(roll_NumberRR);
                                                     if (cheking)
@@ -2300,10 +2333,14 @@ void System::performMainMenuAction2()
                                                             if (students[i].get_roll_number() == roll_NumberRR)
                                                             {
                                                                 S_index = i;
-
+                                                                check3 = true; 
                                                                 courseEnter.setString("Enter Course Name Of student:");
                                                                 break;
                                                             }
+                                                        }
+                                                        if (!check3)
+                                                        {
+                                                            ROLLNUMBEREXISTORNNOT.setString("STudent dont exist");
                                                         }
                                                     }
                                                     else
@@ -2314,32 +2351,30 @@ void System::performMainMenuAction2()
                                                 bool withdraw_Check = false;
                                                 if (Withdraw_Course_Event.type == Event::KeyReleased)
                                                 {
-                                                    if (Withdraw_Course_Event.key.code == Keyboard::Enter && enterKeyPressed && coursecheck && tempcheck)
+                                                    bool checknocoourse = false;
+                                                    if (Withdraw_Course_Event.key.code == Keyboard::Enter && !enterKeyPressed && coursecheck && tempcheck)
                                                     {
-                                                        validaltion obj;
-                                                        bool checking2 = obj.chk_valid_course_code(courseCodename);
-                                                        if (checking2)
+                                                        
+                                                        for (int j = 0; j < 5; j++)  //max 5 courses 
                                                         {
-                                                            for (int j = 0; j < 5; j++)  //max 5 courses 
+                                                            if (students[S_index].get_course_student(j) == courseCodename) // ROLLNUMBER ACT AS A COURSE NAME HERE 
                                                             {
-                                                                if (students[S_index].get_course_student(j) == courseCodename) // ROLLNUMBER ACT AS A COURSE NAME HERE 
-                                                                {
-                                                                    students[S_index].withdraw_courses(courseCodename);
-                                                                    ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
+                                                                checknocoourse = true; 
+                                                                students[S_index].withdraw_courses(courseCodename);
+                                                                ofstream Filee_NamE_Course("student_all_data.txt", ios::trunc); // trunc remove all the existing data from the file
 
-                                                                    filehandling obj("student_all_data.txt");
-                                                                    for (int i = 0; i < student_count_System; i++)
-                                                                    {
-                                                                        obj.write_student_courses(students[i]);   // write student data with courses 
-                                                                    }
-                                                                    withdraw_Check = true;
-                                                                    break;
+                                                                filehandling obj("student_all_data.txt");
+                                                                for (int i = 0; i < student_count_System; i++)
+                                                                {
+                                                                    obj.write_student_courses(students[i]);   // write student data with courses 
                                                                 }
+                                                                withdraw_Check = true;
+                                                                break;
                                                             }
                                                         }
-                                                        else
+                                                        if (!checknocoourse)
                                                         {
-                                                            ValidCourseprint.setString("Not Valid COurse Code Try AGain (AB1234)");
+                                                            NOCOURSE.setString("Student has no course-Try again");
                                                         }
                                                     }
                                                     if (withdraw_Check)
@@ -2359,6 +2394,8 @@ void System::performMainMenuAction2()
                                             Withdar_Course.draw(Validrollnumberprint);
                                             Withdar_Course.draw(Withdraw_Succesfully);
                                             Withdar_Course.draw(courseEnter);
+                                            Withdar_Course.draw(ROLLNUMBEREXISTORNNOT);
+                                            Withdar_Course.draw(NOCOURSE);
                                             Withdar_Course.draw(text);
                                             Withdar_Course.draw(UserInputR);
                                             Withdar_Course.draw(UserInput2);
@@ -2508,8 +2545,9 @@ bool System::add_student(student& obj)
     RenderWindow checkwindow(VideoMode(500, 300), "Saved or not");
 
     Font font;
-    if (!font.loadFromFile("arial.ttf")) {
-        cout << "Error loading font file." << endl;
+    if (!font.loadFromFile("arial.ttf")) 
+    {
+        cout << "Error " << endl;
     }
 
     Text text;
@@ -2535,7 +2573,9 @@ bool System::add_student(student& obj)
                 {
                     students[student_count_System] = obj;
                     filehandling obj("Studentdata.txt");
+                    filehandling obj2("authentification.txt");
                     obj.write_Student_data_into_File(students[student_count_System]);
+                    obj2.save_Rollnumbers(students[student_count_System]);
                     student_count_System++;
                     check = true;
                     checkwindow.close();
